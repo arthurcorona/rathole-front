@@ -4,20 +4,30 @@ import Auth from './pages/Auth';
 import Suggestions from './pages/Suggestions';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/layout/Layout';
 
-// Componente para proteger a rota de Perfil
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { user, loading } = useAuth();
-
   if (loading) return <div className="flex h-screen items-center justify-center">Carregando...</div>;
-
-  // Se não estiver logado, manda pro Login (e não mais para /auth)
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  return children;
+};
 
+const AdminRoute = ({ children }: { children: JSX.Element }) => {
+  const { user, loading, isAdmin } = useAuth();
+
+  if (loading) return <div className="flex h-screen items-center justify-center">Carregando...</div>;
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!isAdmin) {
+    return <Navigate to="/" replace />; 
+  }
   return children;
 };
 
@@ -25,23 +35,29 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Home */}
+        {/* Rotas Públicas */}
         <Route path="/" element={<Index />} />
-        
-        {/* AQUI ESTÁ O SEGREDO: Tem que ser /login, igual ao Header */}
         <Route path="/login" element={<Auth />} />
-        
-        {/* Outras Rotas */}
         <Route path="/suggestions" element={<Suggestions />} />
         <Route path="/posts/:slug" element={<PostDetail />} />
         
-        {/* Rota Privada */}
+        {/* Rota Privada Comum */}
         <Route 
           path="/profile" 
           element={
             <PrivateRoute>
               <Profile />
             </PrivateRoute>
+          } 
+        />
+
+        {/* Rotas de admin */}
+        <Route 
+          path="/admin" 
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
           } 
         />
 

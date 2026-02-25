@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { User } from "@/types"; // Importando do arquivo global
+import { User } from "@/types";
 
 interface AuthContextType {
   user: User | null;
-  signIn: (email: string, password: string) => Promise<void>; // O nome precisa ser signIn
+  signIn: (email: string, password: string) => Promise<void>; 
   signOut: () => void;
+  updateUser: (data: Partial<User>) => void;
   loading: boolean;
   isAdmin: boolean;
 }
@@ -37,26 +38,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // O backend deve retornar { token, user }
       const { token, user: apiUser } = response.data;
 
-      // Montamos o objeto user com segurança
       const userFormatted: User = {
         id: apiUser.id,
         username: apiUser.name || apiUser.username,
-        email: email, // O email vem do formulário ou do retorno
+        email: email,
         role: apiUser.role,
         avatar_url: apiUser.avatar_url || apiUser.avatar,
-        created_at: new Date().toISOString() // Fallback
+        created_at: new Date().toISOString() // fallback
       };
 
       localStorage.setItem('rathole_token', token);
       localStorage.setItem('rathole_user', JSON.stringify(userFormatted));
       
-      // Atualiza o header do Axios para futuras requisições
+      // update no header da api
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setUser(userFormatted);
     } catch (error) {
       console.error("Erro no signIn:", error);
-      throw error; // Lança o erro para o Auth.tsx tratar
+      throw error; // erro pro auth.tsx
     }
   }
 
@@ -67,11 +67,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }
 
+  function updateUser(data: Partial<User>) {
+    if (!user) return;
+
+    const updatedUser = { ...user, ...data };
+    
+    //muda o header
+    setUser(updatedUser);
+    
+    localStorage.setItem('rathole_user', JSON.stringify(updatedUser));
+  }
+
   return (
     <AuthContext.Provider value={{ 
       user, 
-      signIn, // Agora a função existe e é passada aqui
+      signIn, 
       signOut, 
+      updateUser,
       loading, 
       isAdmin: user?.role === 'admin' 
     }}>

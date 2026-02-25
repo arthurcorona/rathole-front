@@ -4,12 +4,14 @@ import { Layout } from '@/components/layout/Layout';
 import { CommentSection } from '@/components/comments/CommentSection';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Post } from "@/types"; // Usando o tipo oficial
+import { Post } from "@/types";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { User as UserIcon, Calendar, Clock, ArrowLeft, Tag as TagIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { api } from "@/lib/api"; // <--- Nossa API Axios (substitui o supabase)
+import { api } from "@/lib/api";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const PostDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -141,9 +143,11 @@ const PostDetail = () => {
           </div>
         )}
 
-        {/* Content - Renderização simples de texto/markdown */}
-        <div className="prose-content text-lg leading-relaxed mb-16 animate-fade-in text-foreground/90 whitespace-pre-wrap">
-          {post.content}
+        {/* Content - Renderização com React Markdown e Tailwind Typography */}
+        <div className="prose prose-invert prose-primary max-w-none w-full text-lg leading-relaxed mb-16 animate-fade-in">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {post.content}
+          </ReactMarkdown>
         </div>
 
         {/* Comments Section */}

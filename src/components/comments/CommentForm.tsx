@@ -26,7 +26,6 @@ interface CommentFormProps {
 }
 
 export function CommentForm({ postId, parentId, onSuccess, onCancel }: CommentFormProps) {
-  // CORREÇÃO 1: Removemos 'profile'. Tudo que precisamos está em 'user'.
   const { user } = useAuth(); 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
