@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { User as UserIcon, Send } from "lucide-react"; // Adicionei o Send
+import { User as UserIcon, Send } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { api } from "@/lib/api"; // Importando nossa API
-import { toast } from '@/hooks/use-toast'; // Ajuste o import do toast se necessário
+import { api } from "@/lib/api"; 
+import { toast } from '@/hooks/use-toast'; 
+import { User } from '@/types'
 
 const commentSchema = z.object({
   content: z.string().min(3, 'Comentário muito curto').max(1000, 'Comentário muito longo'),

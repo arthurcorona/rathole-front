@@ -64,7 +64,7 @@ const Index = () => {
               <Sparkles className="h-4 w-4" />
               Seja bem vindo,
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed cursor-blink">
               Café, devaneios, ideias e reflexões.
             </p>
 

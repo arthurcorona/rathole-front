@@ -107,6 +107,6 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    require("@tailwindcss/typography") // <-- Plugin adicionado aqui!
+    require("@tailwindcss/typography") //pra ter o markdown nos posts
   ],
 } satisfies Config;

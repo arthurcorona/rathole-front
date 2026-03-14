@@ -6,99 +6,100 @@
 
 @layer base {
   :root {
-    /* Developer-First Dark Theme - Slate/Zinc with Emerald accent */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* RatHole Terminal Theme — Deep Purple */
+    --background: 270 15% 4%;
+    --foreground: 260 10% 90%;
 
-    --card: 240 10% 5.5%;
-    --card-foreground: 0 0% 98%;
+    --card: 270 15% 6%;
+    --card-foreground: 260 10% 90%;
 
-    --popover: 240 10% 5.5%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 270 15% 6%;
+    --popover-foreground: 260 10% 90%;
 
-    --primary: 160 84% 39%;
-    --primary-foreground: 0 0% 2%;
+    --primary: 265 80% 62%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 12%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 270 10% 12%;
+    --secondary-foreground: 260 10% 90%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 55%;
+    --muted: 270 10% 14%;
+    --muted-foreground: 260 8% 50%;
 
-    --accent: 160 84% 39%;
-    --accent-foreground: 0 0% 2%;
+    --accent: 265 80% 62%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5% 18%;
-    --input: 240 5% 18%;
-    --ring: 160 84% 39%;
+    --border: 270 10% 15%;
+    --input: 270 10% 15%;
+    --ring: 265 80% 62%;
 
-    --radius: 0.5rem;
+    --radius: 0.375rem;
 
     /* Custom tokens */
-    --code-bg: 240 10% 8%;
-    --code-border: 240 5% 20%;
-    --tag-bg: 160 84% 39%;
-    --tag-text: 0 0% 2%;
-    --glow-primary: 160 84% 39%;
-    --surface-elevated: 240 10% 7%;
-    --gradient-start: 160 84% 39%;
-    --gradient-end: 142 70% 45%;
+    --code-bg: 270 15% 8%;
+    --code-border: 270 10% 18%;
+    --tag-bg: 265 80% 62%;
+    --tag-text: 0 0% 100%;
+    --glow-primary: 265 80% 62%;
+    --surface-elevated: 270 15% 7%;
+    --gradient-start: 265 80% 62%;
+    --gradient-end: 280 70% 50%;
 
     /* Sidebar */
-    --sidebar-background: 240 10% 4%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 160 84% 39%;
-    --sidebar-primary-foreground: 0 0% 2%;
-    --sidebar-accent: 240 5% 12%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 15%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-background: 270 15% 4%;
+    --sidebar-foreground: 260 10% 90%;
+    --sidebar-primary: 265 80% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 10% 12%;
+    --sidebar-accent-foreground: 260 10% 90%;
+    --sidebar-border: 270 10% 15%;
+    --sidebar-ring: 265 80% 62%;
   }
 
   .light {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* Light mode — roxo suave */
+    --background: 270 20% 98%;
+    --foreground: 270 15% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 270 15% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 270 15% 10%;
 
-    --primary: 160 84% 35%;
+    --primary: 265 70% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 10% 3.9%;
+    --secondary: 270 10% 94%;
+    --secondary-foreground: 270 15% 10%;
 
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 5% 45%;
+    --muted: 270 10% 94%;
+    --muted-foreground: 270 8% 45%;
 
-    --accent: 160 84% 35%;
+    --accent: 265 70% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 5% 90%;
-    --input: 240 5% 90%;
-    --ring: 160 84% 35%;
+    --border: 270 10% 88%;
+    --input: 270 10% 88%;
+    --ring: 265 70% 50%;
 
-    --code-bg: 240 5% 96%;
-    --code-border: 240 5% 90%;
+    --code-bg: 270 10% 95%;
+    --code-border: 270 10% 88%;
     --surface-elevated: 0 0% 100%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 10% 3.9%;
-    --sidebar-primary: 160 84% 35%;
+    --sidebar-background: 270 20% 97%;
+    --sidebar-foreground: 270 15% 10%;
+    --sidebar-primary: 265 70% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 240 10% 3.9%;
-    --sidebar-border: 240 5% 90%;
-    --sidebar-ring: 160 84% 35%;
+    --sidebar-accent: 270 10% 94%;
+    --sidebar-accent-foreground: 270 15% 10%;
+    --sidebar-border: 270 10% 88%;
+    --sidebar-ring: 265 70% 50%;
   }
 }
 
@@ -112,12 +113,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-mono antialiased;
   }
 
-  /* Typography */
+  /* Typography — mono everywhere for terminal vibe */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight;
+    @apply font-mono tracking-tight;
   }
 
   /* Code styling */
@@ -132,6 +133,43 @@
   pre code {
     @apply bg-transparent border-0 p-0;
   }
+
+  /* Terminal cursor blink */
+  .cursor-blink::after {
+    content: "▋";
+    animation: blink 1s step-end infinite;
+    @apply text-primary ml-0.5;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Scrollbar terminal style */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+
+  /* Selection color */
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--foreground));
+  }
 }
 
 @layer components {
@@ -140,7 +178,7 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-purple-500 to-violet-400 bg-clip-text text-transparent;
   }
 
   .card-hover {
@@ -148,7 +186,13 @@
   }
 
   .tag-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-primary/10 text-primary border border-primary/20;
+  }
+
+  /* Terminal prompt style */
+  .terminal-prompt::before {
+    content: "$ ";
+    @apply text-primary font-mono;
   }
 
   .prose-content {
@@ -190,6 +234,12 @@
   .animate-scale-in {
     animation: scaleIn 0.3s ease-out forwards;
   }
+
+  .animate-gengar-peek {
+  animation: gengarPeek 4s ease-in-out forwards;
+}
+
+
 }
 
 @layer utilities {
@@ -234,5 +284,28 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes gengarPeek {
+  0% {
+    opacity: 0;
+    transform: translateX(30px) scale(0.8);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  80% {
+    opacity: 0.5;
+    transform: translateX(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.9);
   }
 }

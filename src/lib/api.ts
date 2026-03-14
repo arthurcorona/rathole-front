@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3333', // O endereço do seu Backend Fastify
+  baseURL: 'http://localhost:3333', // endereço do back Fastify
 });
 
 api.interceptors.request.use((config) => {

@@ -5,8 +5,10 @@ import Suggestions from './pages/Suggestions';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import About from './pages/About';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/layout/Layout';
+
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { user, loading } = useAuth();
@@ -53,13 +55,15 @@ function App() {
 
         {/* Rotas de admin */}
         <Route 
-          path="/admin" 
-          element={
+          path="/admin" element={
             <AdminRoute>
               <AdminDashboard />
             </AdminRoute>
-          } 
-        />
+          }/>
+
+        <Route path="/about" element={
+          <About />
+          }/>
 
         {/* Catch-All: Se não achar nada, volta pra Home */}
         <Route path="*" element={<Navigate to="/" replace />} />

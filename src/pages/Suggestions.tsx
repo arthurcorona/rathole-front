@@ -18,6 +18,7 @@ const Suggestions = () => {
   const { user } = useAuth();
   const [suggestions, setSuggestions] = useState<SuggestionWithVoted[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [gengarVisible, setGengarVisible] = useState(true);//gengar fodoca
 
   const fetchSuggestions = async () => {
     try {
@@ -63,25 +64,35 @@ const Suggestions = () => {
 
       <section className="container py-12">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Coluna da Esquerda: Formulário ou Login */}
-          <div className="lg:col-span-1 order-2 lg:order-1">
-            {user ? (
-              <div className="sticky top-24">
-                <SuggestionForm onSuccess={fetchSuggestions} />
-              </div>
-            ) : (
-              <div className="p-6 rounded-lg bg-card/50 border border-border/50 text-center">
-                <LogIn className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="font-medium mb-2">Faça login para participar</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Envie sugestões e vote nos temas que você quer ver no blog.
-                </p>
-                <Button asChild className="w-full">
-                  <Link to="/login">Entrar</Link>
-                </Button>
-              </div>
-            )}
-          </div>
+          {/* Coluna da Esquerda: Formulário ou Login + Gengar */}
+            <div className="lg:col-span-1 order-2 lg:order-1 relative">
+              {/* Gengar animação */}
+              {gengarVisible && (
+                <img
+                  src="../../public/assets/gengaaaar.png"
+                  alt="Gengar espreitando"
+                  className="absolute -right-10 -top-16 w-24 h-24 object-contain pointer-events-none z-10 animate-gengar-peek"
+                  onAnimationEnd={() => setGengarVisible(false)}
+                />
+              )}
+
+              {user ? (
+                <div className="sticky top-24 relative z-20">
+                  <SuggestionForm onSuccess={fetchSuggestions} />
+                </div>
+              ) : (
+                <div className="p-6 rounded-lg bg-card/50 border border-border/50 text-center relative z-20">
+                  <LogIn className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="font-medium mb-2">Faça login para participar</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Envie sugestões e vote nos temas que você quer ver no blog.
+                  </p>
+                  <Button asChild className="w-full">
+                    <Link to="/login">Entrar</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
 
           {/* Coluna da Direita: Lista de Sugestões */}
           <div className="lg:col-span-2 order-1 lg:order-2 space-y-6">

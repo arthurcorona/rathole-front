@@ -18,15 +18,18 @@ export function Footer() {
           <nav className="flex items-center gap-6">
             <Link 
               to="/" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Posts
             </Link>
             <Link 
               to="/suggestions" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sugestões
+            </Link>
+            <Link 
+              to="/about" 
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Sobre
             </Link>
           </nav>
 

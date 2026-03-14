@@ -31,17 +31,20 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-6">
           <Link 
             to="/" 
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Posts
           </Link>
           <Link 
             to="/suggestions" 
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-          >
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
             <Lightbulb className="h-4 w-4" />
             Sugestões
           </Link>
+          <Link 
+            to="/about" 
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Sobre
+        </Link>
         </nav>
 
         <div className="flex items-center gap-4">
