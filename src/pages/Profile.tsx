@@ -22,10 +22,25 @@ const Profile = () => {
   const [username, setUsername] = useState(user?.username || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
 
-  // captura o arquivo e manda pro fastfy
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+  // captura o arquivo e manda pro fastify
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error('Tipo inválido. Use JPG, PNG ou WebP.');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > MAX_SIZE) {
+      toast.error('Arquivo muito grande. Máximo 5MB.');
+      event.target.value = '';
+      return;
+    }
 
     setIsUploading(true);
     const formData = new FormData();

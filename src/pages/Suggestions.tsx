@@ -18,7 +18,6 @@ const Suggestions = () => {
   const { user } = useAuth();
   const [suggestions, setSuggestions] = useState<SuggestionWithVoted[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [gengarVisible, setGengarVisible] = useState(true);//gengar fodoca
 
   const fetchSuggestions = async () => {
     try {
@@ -45,13 +44,9 @@ const Suggestions = () => {
         
         <div className="container relative py-16 md:py-20">
           <div className="max-w-2xl space-y-4 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary">
-              <Lightbulb className="h-4 w-4" />
-              Feature Requests
-            </div>
             
             <h1 className="text-3xl md:text-4xl font-bold">
-              Sugestões de Conteúdo
+              Sugestões de Conteúdo ou Features para o blog
             </h1>
             
             <p className="text-muted-foreground leading-relaxed">
@@ -64,17 +59,9 @@ const Suggestions = () => {
 
       <section className="container py-12">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Coluna da Esquerda: Formulário ou Login + Gengar */}
+          {/* Coluna da Esquerda: Formulário ou Login */}
             <div className="lg:col-span-1 order-2 lg:order-1 relative">
               {/* Gengar animação */}
-              {gengarVisible && (
-                <img
-                  src="../../public/assets/gengaaaar.png"
-                  alt="Gengar espreitando"
-                  className="absolute -right-10 -top-16 w-24 h-24 object-contain pointer-events-none z-10 animate-gengar-peek"
-                  onAnimationEnd={() => setGengarVisible(false)}
-                />
-              )}
 
               {user ? (
                 <div className="sticky top-24 relative z-20">

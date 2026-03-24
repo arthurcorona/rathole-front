@@ -1,4 +1,4 @@
-import { Terminal, Github, Twitter } from 'lucide-react';
+import { Github, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function Footer() {
@@ -6,10 +6,14 @@ export function Footer() {
     <footer className="border-t border-border/40 bg-background/50">
       <div className="container py-8 md:py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          
+          {/* LOGO ATUALIZADA AQUI */}
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-md bg-primary/10 border border-primary/20">
-              <Terminal className="h-4 w-4 text-primary" />
-            </div>
+            <img 
+              src="/assets/logo.png" 
+              alt="RatHole Logo" 
+              className="h-6 w-auto opacity-80" 
+            />
             <span className="font-mono text-sm text-muted-foreground">
               Rat<span className="text-primary">Hole</span>
             </span>

@@ -6,6 +6,7 @@ import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import About from './pages/About';
+import AdminEditPost from './pages/admin/AdminEditPost';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/layout/Layout';
 
@@ -63,6 +64,14 @@ function App() {
 
         <Route path="/about" element={
           <About />
+          }/>
+
+        <Route 
+          path="/admin/posts/edit/:id" 
+          element={
+            <AdminRoute>
+              <AdminEditPost />
+            </AdminRoute>
           }/>
 
         {/* Catch-All: Se não achar nada, volta pra Home */}

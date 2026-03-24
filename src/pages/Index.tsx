@@ -13,6 +13,7 @@ const Index = () => {
   
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [showNewPostForm, setShowNewPostForm] = useState(false);
   const { toast } = useToast();
 
@@ -21,13 +22,9 @@ const Index = () => {
     try {
       const response = await api.get<Post[]>('/posts');
       setPosts(response.data);
+      setHasError(false);
     } catch (error) {
-      console.error('Erro ao carregar posts:', error);
-      toast({ 
-        variant: "destructive", 
-        title: "Erro", 
-        description: "Não foi possível carregar os posts." 
-      });
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
@@ -60,12 +57,9 @@ const Index = () => {
         
         <div className="container relative py-20 md:py-28">
           <div className="max-w-3xl space-y-6 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary">
-              <Sparkles className="h-4 w-4" />
-              Seja bem vindo,
-            </div>
             <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed cursor-blink">
-              Café, devaneios, ideias e reflexões.
+              Seja bem vindo.
+              Ambiente de aprendizados, devaneios, ideias e reflexões.
             </p>
 
             <div className="flex items-center gap-4 pt-4">
@@ -114,6 +108,7 @@ const Index = () => {
           posts={posts}
           isLoading={isLoading || authLoading}
           isAdmin={isAdmin}
+          hasError={hasError}
           onPublishPost={publishPost}
         />
       </section>

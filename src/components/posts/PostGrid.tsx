@@ -7,16 +7,32 @@ interface PostGridProps {
   posts: Post[];
   isLoading?: boolean;
   isAdmin?: boolean;
-  onPublishPost?: (id: string) => void; //teste function;
+  hasError?: boolean;
+  onPublishPost?: (id: string) => void;
 }
 
-export const PostGrid = ({ posts, isLoading, isAdmin, onPublishPost }: PostGridProps) => {
+export const PostGrid = ({ posts, isLoading, isAdmin, hasError, onPublishPost }: PostGridProps) => {
   if (isLoading) {
     return <p>Carregando posts...</p>;
   }
 
+  if (hasError) {
+    return (
+      <div className="space-y-1">
+        <p className="text-muted-foreground">Nenhum post encontrado.</p>
+        <p className="text-sm text-muted-foreground/60">
+          Provavelmente meu servidor caiu.{' '}
+          <a href="https://t.me/corona_great" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+            Reporte o bug.
+          </a>{' '}
+          que eu resolvo!
+        </p>
+      </div>
+    );
+  }
+
   if (posts.length === 0) {
-    return <p className="text-muted-foreground">Nenhum post encontrado.</p>;
+    return <p className="text-muted-foreground">Nenhum post por aqui ainda.</p>;
   }
 
   return (

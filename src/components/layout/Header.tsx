@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Terminal, LogIn, LogOut, User, Lightbulb, Shield } from 'lucide-react';
+import { LogIn, LogOut, User, Lightbulb, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -19,10 +19,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
+        
+        {/* LOGO ATUALIZADA AQUI */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 group-hover:border-primary/40 transition-colors">
-            <Terminal className="h-5 w-5 text-primary" />
-          </div>
+          <img 
+            src="/assets/logo.png" 
+            alt="RatHole Logo" 
+            className="h-8 w-auto transition-transform group-hover:scale-105" 
+          />
           <span className="font-mono font-semibold text-lg">
             Rat<span className="text-primary">Hole</span>
           </span>

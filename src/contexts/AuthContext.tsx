@@ -4,8 +4,8 @@ import { User } from "@/types";
 
 interface AuthContextType {
   user: User | null;
-  signIn: (email: string, password: string) => Promise<void>; 
-  signOut: () => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
   loading: boolean;
   isAdmin: boolean;
@@ -18,13 +18,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('rathole_token');
+    // Restaura o usuário (sem token — o cookie é enviado automaticamente)
     const storedUser = localStorage.getItem('rathole_user');
-
-    if (storedToken && storedUser) {
+    if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
-      } catch (e) {
+      } catch {
         localStorage.removeItem('rathole_user');
       }
     }
@@ -32,60 +31,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signIn(email: string, password: string) {
-    try {
-      const response = await api.post('/auth/login', { email, password });
-      
-      // O backend deve retornar { token, user }
-      const { token, user: apiUser } = response.data;
+    // Backend seta o cookie HttpOnly — não precisamos lidar com o token aqui
+    const response = await api.post('/auth/login', { email, password });
+    const { user: apiUser } = response.data;
 
-      const userFormatted: User = {
-        id: apiUser.id,
-        username: apiUser.name || apiUser.username,
-        email: email,
-        role: apiUser.role,
-        avatar_url: apiUser.avatar_url || apiUser.avatar,
-        created_at: new Date().toISOString() // fallback
-      };
+    const userFormatted: User = {
+      id: apiUser.id,
+      username: apiUser.name || apiUser.username,
+      email: email,
+      role: apiUser.role,
+      avatar_url: apiUser.avatar_url || apiUser.avatar,
+      created_at: new Date().toISOString(),
+    };
 
-      localStorage.setItem('rathole_token', token);
-      localStorage.setItem('rathole_user', JSON.stringify(userFormatted));
-      
-      // update no header da api
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      setUser(userFormatted);
-    } catch (error) {
-      console.error("Erro no signIn:", error);
-      throw error; // erro pro auth.tsx
-    }
+    localStorage.setItem('rathole_user', JSON.stringify(userFormatted));
+    setUser(userFormatted);
   }
 
-  function signOut() {
-    localStorage.removeItem('rathole_token');
+  async function signOut() {
+    try {
+      await api.post('/auth/logout'); // backend limpa o cookie HttpOnly
+    } catch {
+      // continua o logout mesmo se a chamada falhar
+    }
     localStorage.removeItem('rathole_user');
-    api.defaults.headers.common['Authorization'] = '';
     setUser(null);
   }
 
   function updateUser(data: Partial<User>) {
     if (!user) return;
-
     const updatedUser = { ...user, ...data };
-    
-    //muda o header
     setUser(updatedUser);
-    
     localStorage.setItem('rathole_user', JSON.stringify(updatedUser));
   }
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      signIn, 
-      signOut, 
+    <AuthContext.Provider value={{
+      user,
+      signIn,
+      signOut,
       updateUser,
-      loading, 
-      isAdmin: user?.role === 'admin' 
+      loading,
+      isAdmin: user?.role === 'admin',
     }}>
       {children}
     </AuthContext.Provider>
