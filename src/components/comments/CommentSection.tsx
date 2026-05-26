@@ -103,6 +103,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
               comment={comment}
               postId={postId}
               onReplyAdded={fetchComments}
+              onDeleted={fetchComments}
             />
           ))}
         </div>

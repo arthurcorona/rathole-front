@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { User as UserIcon, Mail, Lock, Reply } from "lucide-react";
+import { User as UserIcon, Reply, Trash2 } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CommentForm } from './CommentForm';
-import { Post, User, Tag, Comment } from "@/types";
+import { Comment } from "@/types";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
-// Definindo o tipo recursivo (Comentário que tem lista de Comentários dentro)
 interface CommentWithAuthor extends Comment {
   replies?: CommentWithAuthor[];
 }
@@ -16,20 +18,37 @@ interface CommentItemProps {
   comment: CommentWithAuthor;
   postId: string;
   onReplyAdded?: () => void;
+  onDeleted?: () => void;
   depth?: number;
 }
 
-export function CommentItem({ comment, postId, onReplyAdded, depth = 0 }: CommentItemProps) {
+export function CommentItem({ comment, postId, onReplyAdded, onDeleted, depth = 0 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
-  
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { isAdmin } = useAuth();
+
   const displayName = comment.user?.username || comment.guest_name || 'Anônimo';
   const avatarUrl = comment.user?.avatar_url;
-  
+
   const isNested = depth > 0;
 
   const handleReplySuccess = () => {
     setShowReplyForm(false);
     onReplyAdded?.();
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Excluir este comentário? Esta ação não pode ser desfeita.')) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/comments/${comment.id}`);
+      toast.success('Comentário excluído');
+      onDeleted?.();
+    } catch (error) {
+      toast.error('Erro ao excluir comentário');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -63,17 +82,32 @@ export function CommentItem({ comment, postId, onReplyAdded, depth = 0 }: Commen
             {comment.content}
           </p>
 
-          {depth < 2 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1.5 -ml-2"
-              onClick={() => setShowReplyForm(!showReplyForm)}
-            >
-              <Reply className="h-3.5 w-3.5" />
-              Responder
-            </Button>
-          )}
+          <div className="flex items-center gap-1 -ml-2">
+            {depth < 2 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1.5"
+                onClick={() => setShowReplyForm(!showReplyForm)}
+              >
+                <Reply className="h-3.5 w-3.5" />
+                Responder
+              </Button>
+            )}
+
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-muted-foreground hover:text-destructive gap-1.5"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                {isDeleting ? 'Excluindo…' : 'Excluir'}
+              </Button>
+            )}
+          </div>
 
           {showReplyForm && (
             <div className="mt-3 p-3 rounded-lg bg-secondary/30 border border-border/50">
@@ -97,6 +131,7 @@ export function CommentItem({ comment, postId, onReplyAdded, depth = 0 }: Commen
               comment={reply}
               postId={postId}
               onReplyAdded={onReplyAdded}
+              onDeleted={onDeleted}
               depth={depth + 1}
             />
           ))}
