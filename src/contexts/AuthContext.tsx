@@ -31,9 +31,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signIn(email: string, password: string) {
-    // Backend seta o cookie HttpOnly — não precisamos lidar com o token aqui
     const response = await api.post('/auth/login', { email, password });
-    const { user: apiUser } = response.data;
+    const { token, user: apiUser } = response.data;
 
     const userFormatted: User = {
       id: apiUser.id,
@@ -44,16 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString(),
     };
 
+    localStorage.setItem('rathole_token', token);
     localStorage.setItem('rathole_user', JSON.stringify(userFormatted));
     setUser(userFormatted);
   }
 
   async function signOut() {
-    try {
-      await api.post('/auth/logout'); // backend limpa o cookie HttpOnly
-    } catch {
-      // continua o logout mesmo se a chamada falhar
-    }
+    localStorage.removeItem('rathole_token');
     localStorage.removeItem('rathole_user');
     setUser(null);
   }
