@@ -12,7 +12,7 @@ export function Footer() {
             <img 
               src="/assets/logo.png" 
               alt="RatHole Logo" 
-              className="h-6 w-auto opacity-80" 
+              className="h-8 w-auto opacity-80"
             />
             <span className="font-mono text-sm text-muted-foreground">
               Rat<span className="text-primary">Hole</span>

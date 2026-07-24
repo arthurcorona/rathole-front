@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { PostCard } from './PostCard';
-import { Post, User, Tag } from "@/types";
-import { FileText } from 'lucide-react';
+import { Post } from "@/types";
+import { Clock } from 'lucide-react';
+import { readingTime } from "@/lib/readingTime";
 
 interface PostGridProps {
   posts: Post[];
@@ -11,9 +11,18 @@ interface PostGridProps {
   onPublishPost?: (id: string) => void;
 }
 
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('pt-BR');
+}
+
 export const PostGrid = ({ posts, isLoading, isAdmin, hasError, onPublishPost }: PostGridProps) => {
   if (isLoading) {
-    return <p>Carregando posts...</p>;
+    return (
+      <p className="text-sm text-muted-foreground cursor-blink">
+        <span className="text-primary">corona@rathole</span>
+        <span className="text-muted-foreground">:~$</span> carregando posts
+      </p>
+    );
   }
 
   if (hasError) {
@@ -36,53 +45,68 @@ export const PostGrid = ({ posts, isLoading, isAdmin, hasError, onPublishPost }:
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {posts.map((post) => (
-        <Link to={`/posts/${post.slug}`} key={post.id} className="block">
-          <article key={post.id} className="rounded-lg border border-border bg-card p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{post.title}</h3>
-
-              {isAdmin && post.status === 'draft' && onPublishPost && (
-                <button
-                  onClick={() => onPublishPost(post.id)}
-                  className="text-xs px-2 py-1 rounded-md bg-emerald-600 text-white hover:bg-emerald-700"
-                >
-                  Publicar
-                </button>
-              )}
+    <div className="divide-y divide-border/40 border-t border-border/40">
+      {posts.map((post, index) => (
+        <article
+          key={post.id}
+          className="group animate-slide-up py-6"
+          style={{ animationDelay: `${index * 80}ms` }}
+        >
+          <Link to={`/posts/${post.slug}`} className="block">
+            {/* linha de meta: data + autor à esquerda, tempo de leitura à direita */}
+            <div className="mb-2 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-3">
+                <span className="text-primary">{formatDate(post.created_at)}</span>
+                <span className="font-semibold text-primary">{post.author.username}</span>
+                {isAdmin && post.status === 'draft' && (
+                  <span className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
+                    rascunho
+                  </span>
+                )}
+              </div>
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                {readingTime(post.content)} min
+              </span>
             </div>
 
-            {post.status === 'draft' && isAdmin && (
-              <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
-                RASCUNHO
-              </span>
-            )}
+            {/* título */}
+            <h3 className="text-lg font-bold leading-snug tracking-tight transition-colors group-hover:text-primary md:text-xl">
+              {post.title}
+            </h3>
 
-            <p className="text-xs text-muted-foreground">
-              {new Date(post.created_at).toLocaleDateString('pt-BR')} • {post.author.username}
-            </p>
-
+            {/* excerpt */}
             {post.excerpt && (
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {post.excerpt}
               </p>
             )}
 
+            {/* tags */}
             {post.tags && post.tags.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
                   <span
                     key={tag.id}
-                    className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+                    className="rounded border border-border/60 bg-muted/30 px-2 py-0.5 text-xs text-muted-foreground"
                   >
-                    {tag.name}
+                    #{tag.name.replace(/^#/, '')}
                   </span>
                 ))}
               </div>
             )}
-          </article>
-        </Link>
+          </Link>
+
+          {/* ação de admin (fora do Link pra não aninhar interativo) */}
+          {isAdmin && post.status === 'draft' && onPublishPost && (
+            <button
+              onClick={() => onPublishPost(post.id)}
+              className="mt-3 rounded-md border border-primary/40 px-2.5 py-1 text-xs text-primary hover:bg-primary/10 transition-colors"
+            >
+              publicar
+            </button>
+          )}
+        </article>
       ))}
     </div>
   );

@@ -1,16 +1,11 @@
 import { useState } from 'react';
-import { ArrowUp, MessageSquare, Clock, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ArrowUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from "@/lib/api";
 import { Suggestion } from "@/types";
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
-// O backend precisa mandar esse 'has_voted' calculado na query
+// O backend manda 'has_voted' calculado na query
 interface SuggestionWithVoted extends Suggestion {
   has_voted?: boolean;
 }
@@ -20,11 +15,13 @@ interface SuggestionCardProps {
   onVoteChange?: () => void;
 }
 
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('pt-BR');
+}
+
 export function SuggestionCard({ suggestion, onVoteChange }: SuggestionCardProps) {
   const { user } = useAuth();
   const [isVoting, setIsVoting] = useState(false);
-  
-  // Estado local para refletir a UI instantaneamente
   const [hasVoted, setHasVoted] = useState(suggestion.has_voted || false);
   const [votesCount, setVotesCount] = useState(suggestion.upvotes_count);
 
@@ -35,81 +32,62 @@ export function SuggestionCard({ suggestion, onVoteChange }: SuggestionCardProps
     }
 
     setIsVoting(true);
-
     try {
       if (hasVoted) {
         await api.delete(`/suggestions/${suggestion.id}/vote`);
-        
         setHasVoted(false);
         setVotesCount((prev) => Math.max(0, prev - 1));
-        toast.success('Voto removido');
       } else {
         await api.post(`/suggestions/${suggestion.id}/vote`);
-        
         setHasVoted(true);
         setVotesCount((prev) => prev + 1);
-        toast.success('Voto registrado!');
       }
-
-      onVoteChange?.(); // da um reload quando retorna erro
+      onVoteChange?.();
     } catch (error) {
       console.error('Error voting:', error);
       toast.error('Erro ao processar voto');
-      
       setHasVoted(!hasVoted);
-      setVotesCount((prev) => hasVoted ? prev + 1 : prev - 1);
+      setVotesCount((prev) => (hasVoted ? prev + 1 : prev - 1));
     } finally {
       setIsVoting(false);
     }
   };
 
   return (
-    <Card className="card-hover bg-card/50">
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge 
-                variant={suggestion.status === 'reviewed' ? 'default' : 'secondary'}
-                className={suggestion.status === 'reviewed' ? 'bg-primary/10 text-primary border-primary/20' : ''}
-              >
-                {suggestion.status === 'reviewed' ? (
-                  <><CheckCircle className="h-3 w-3 mr-1" /> Revisado</>
-                ) : (
-                  <><Clock className="h-3 w-3 mr-1" /> Pendente</>
-                )}
-              </Badge>
-            </div>
-            <h3 className="font-semibold text-lg">{suggestion.title}</h3>
-          </div>
+    <div className="flex gap-4 py-6">
+      {/* caixa de voto */}
+      <button
+        onClick={handleVote}
+        disabled={isVoting}
+        aria-label={hasVoted ? 'Remover voto' : 'Votar'}
+        className={`flex h-16 w-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-md border transition-colors disabled:opacity-50 ${
+          hasVoted
+            ? 'border-primary/50 bg-primary/10 text-primary'
+            : 'border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary'
+        }`}
+      >
+        <ArrowUp className="h-4 w-4" />
+        <span className="text-sm font-bold">{votesCount}</span>
+      </button>
 
-          <Button
-            variant={hasVoted ? 'default' : 'outline'}
-            size="sm"
-            className="flex-col h-auto py-2 px-3 gap-0.5 min-w-14 transition-all"
-            onClick={handleVote}
-            disabled={isVoting}
-          >
-            <ArrowUp className={`h-4 w-4 ${hasVoted ? 'animate-bounce' : 'text-muted-foreground'}`} />
-            <span className="text-sm font-bold">{votesCount}</span>
-          </Button>
+      {/* conteúdo */}
+      <div className="flex-1">
+        <div className="mb-1 flex items-center gap-2 text-xs">
+          <span className="font-semibold text-primary">@{suggestion.user?.username || 'anônimo'}</span>
+          <span className="text-muted-foreground">·</span>
+          <span className="text-muted-foreground">{formatDate(suggestion.created_at)}</span>
         </div>
-      </CardHeader>
 
-      <CardContent>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {suggestion.description}
-        </p>
-      </CardContent>
+        <h3 className="text-base font-bold leading-snug tracking-tight md:text-lg">
+          {suggestion.title}
+        </h3>
 
-      <CardFooter className="pt-0 text-xs text-muted-foreground">
-        <div className="flex items-center gap-4">
-          <span>Por @{suggestion.user?.username || 'Anônimo'}</span>
-          <span>
-            {format(new Date(suggestion.created_at), "d 'de' MMM", { locale: ptBR })}
-          </span>
-        </div>
-      </CardFooter>
-    </Card>
+        {suggestion.description && (
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {suggestion.description}
+          </p>
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LogIn, LogOut, User, Lightbulb, Shield } from 'lucide-react';
+import { LogIn, LogOut, User, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -25,7 +25,7 @@ export function Header() {
           <img 
             src="/assets/logo.png" 
             alt="RatHole Logo" 
-            className="h-8 w-auto transition-transform group-hover:scale-105" 
+            className="h-11 w-auto transition-transform group-hover:scale-105"
           />
           <span className="font-mono font-semibold text-lg">
             Rat<span className="text-primary">Hole</span>
@@ -38,10 +38,9 @@ export function Header() {
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Posts
           </Link>
-          <Link 
-            to="/suggestions" 
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-            <Lightbulb className="h-4 w-4" />
+          <Link
+            to="/suggestions"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Sugestões
           </Link>
           <Link 

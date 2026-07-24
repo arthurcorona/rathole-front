@@ -10,6 +10,7 @@ import { ptBR } from 'date-fns/locale';
 import { User as UserIcon, Calendar, Clock, ArrowLeft, Tag as TagIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { api } from "@/lib/api";
+import { readingTime } from "@/lib/readingTime";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -66,8 +67,8 @@ const PostDetail = () => {
     );
   }
 
-  // Cálculo simples de tempo de leitura
-  const readingTime = Math.ceil(post.content.split(' ').length / 200);
+  // Tempo de leitura (mesmo cálculo usado na lista de posts)
+  const readingTimeMin = readingTime(post.content);
 
   return (
     <Layout>
@@ -126,7 +127,7 @@ const PostDetail = () => {
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
-                {readingTime} min de leitura
+                {readingTimeMin} min de leitura
               </span>
             </div>
           </div>
