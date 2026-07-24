@@ -112,7 +112,7 @@ upNu0a+uAP9Yf+gRSkb2HP6bhBqKoWObzOuIMlYUQeGH+OznZo1hCA==
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-foreground">Comunicação Segura (GPG)</h3>
+                  <h3 className="text-sm font-semibold text-foreground">Comunicação Segura (PGP)</h3>
                   <button 
                     onClick={copyToClipboard}
                     className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors"

@@ -2,19 +2,15 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Lightbulb, Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { api } from "@/lib/api"; // <--- Importando a API
+import { api } from "@/lib/api";
 import { toast } from 'sonner';
 
 const suggestionSchema = z.object({
   title: z.string().min(5, 'Título muito curto').max(100, 'Título muito longo'),
-  description: z.string().min(20, 'Descrição muito curta').max(500, 'Descrição muito longa')
+  description: z.string().min(20, 'Contexto muito curto').max(500, 'Contexto muito longo'),
 });
 
 type SuggestionFormData = z.infer<typeof suggestionSchema>;
@@ -28,27 +24,22 @@ export function SuggestionForm({ onSuccess }: SuggestionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<SuggestionFormData>({
-    resolver: zodResolver(suggestionSchema)
+    resolver: zodResolver(suggestionSchema),
   });
 
   const onSubmit = async (data: SuggestionFormData) => {
-    // 1) Verifica se está logado
     if (!user) {
       toast.error('Faça login para enviar sugestões');
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      // 2) Envia para a API (Substituindo Supabase)
-      // Não precisamos mandar user_id no corpo, o Backend pega do Token!
+      // O user_id vem do token no backend — não precisa de apelido
       await api.post('/suggestions', {
         title: data.title,
         description: data.description,
       });
-
-      // 3) Sucesso
       toast.success('Sugestão enviada com sucesso!');
       reset();
       onSuccess?.();
@@ -60,53 +51,47 @@ export function SuggestionForm({ onSuccess }: SuggestionFormProps) {
     }
   };
 
-  // Se não estiver logado, não renderiza o form
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <Card className="bg-card/50 border-primary/20">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Lightbulb className="h-5 w-5 text-primary" />
-          Sugira um tema
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Título</Label>
-            <Input
-              id="title"
-              placeholder="Ex: Tutorial sobre Docker"
-              className="bg-secondary/50"
-              {...register('title')}
-            />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title.message}</p>
-            )}
-          </div>
+    <div className="rounded-lg border border-code-border bg-code-bg/60 p-5 md:p-6">
+      <p className="mb-4 text-sm text-muted-foreground">
+        <span className="text-primary">&gt;</span> deixar uma sugestão
+      </p>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Descrição</Label>
-            <Textarea
-              id="description"
-              placeholder="Descreva o que gostaria de ver neste post..."
-              className="min-h-24 bg-secondary/50 resize-none"
-              {...register('description')}
-            />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description.message}</p>
-            )}
-          </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <Input
+            placeholder="Título da ideia — ex: como auditar dependências npm"
+            className="bg-background/50 font-mono"
+            {...register('title')}
+          />
+          {errors.title && (
+            <p className="mt-1 text-xs text-destructive">{errors.title.message}</p>
+          )}
+        </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full gap-2">
-            <Send className="h-4 w-4" />
-            {isSubmitting ? 'Enviando...' : 'Enviar Sugestão'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <div>
+          <Textarea
+            placeholder="Contexto — por que isso seria útil?"
+            className="min-h-28 resize-none bg-background/50 font-mono"
+            {...register('description')}
+          />
+          {errors.description && (
+            <p className="mt-1 text-xs text-destructive">{errors.description.message}</p>
+          )}
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 rounded-md border border-primary/40 px-4 py-2 text-sm text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
+          >
+            {isSubmitting ? 'enviando...' : 'enviar sugestão →'}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

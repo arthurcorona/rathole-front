@@ -1,28 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { SuggestionCard } from '@/components/suggestions/SuggestionCard';
 import { SuggestionForm } from '@/components/suggestions/SuggestionForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { Suggestion } from "@/types";
 import { api } from "@/lib/api";
-import { Lightbulb, LogIn, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
-// Estendendo o tipo para incluir o campo que o Front/Back controlam
 interface SuggestionWithVoted extends Suggestion {
   has_voted?: boolean;
 }
+
+type SortBy = 'votos' | 'recentes';
 
 const Suggestions = () => {
   const { user } = useAuth();
   const [suggestions, setSuggestions] = useState<SuggestionWithVoted[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortBy>('votos');
 
   const fetchSuggestions = async () => {
     try {
-      // A MÁGICA: Uma única requisição substitui aquelas 3 do Supabase
-      // O Backend já entrega ordenado e com os dados do usuário
       const response = await api.get<SuggestionWithVoted[]>('/suggestions');
       setSuggestions(response.data);
     } catch (error) {
@@ -34,94 +32,115 @@ const Suggestions = () => {
 
   useEffect(() => {
     fetchSuggestions();
-  }, [user]); // Recarrega se o usuário logar/deslogar
+  }, [user]);
+
+  const sorted = useMemo(() => {
+    const list = [...suggestions];
+    if (sortBy === 'recentes') {
+      list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else {
+      list.sort((a, b) => b.upvotes_count - a.upvotes_count);
+    }
+    return list;
+  }, [suggestions, sortBy]);
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-border/40">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
-        
-        <div className="container relative py-16 md:py-20">
-          <div className="max-w-2xl space-y-4 animate-fade-in">
-            
-            <h1 className="text-3xl md:text-4xl font-bold">
-              Sugestões de Conteúdo ou Features para o blog
-            </h1>
-            
-            <p className="text-muted-foreground leading-relaxed">
-              Sugira temas para novos posts e vote nas sugestões que você mais gostaria de ver.
-              As mais votadas têm prioridade!
+      {/* Terminal hero */}
+      <section className="container pt-10 md:pt-14">
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-lg border border-code-border bg-code-bg shadow-xl animate-fade-in">
+          <div className="flex items-center gap-2 border-b border-code-border bg-muted/10 px-4 py-3">
+            <span className="h-3 w-3 rounded-full bg-red-500/70" />
+            <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+            <span className="h-3 w-3 rounded-full bg-green-500/70" />
+            <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~/sugestoes</span>
+          </div>
+
+          <div className="space-y-4 p-5 text-sm leading-relaxed md:p-6">
+            <div>
+              <p>
+                <span className="text-primary">corona@rathole</span>
+                <span className="text-muted-foreground">:~$</span> cat ./sugestoes.md
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                Sugira temas para novos posts e vote nas sugestões que você mais gostaria de ver.
+                As mais votadas têm prioridade!
+              </p>
+            </div>
+
+            <p className="cursor-blink">
+              <span className="text-primary">corona@rathole</span>
+              <span className="text-muted-foreground">:~$</span> ./nova-sugestao
             </p>
           </div>
         </div>
       </section>
 
-      <section className="container py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Coluna da Esquerda: Formulário ou Login */}
-            <div className="lg:col-span-1 order-2 lg:order-1 relative">
-              {/* Gengar animação */}
+      {/* Formulário / login */}
+      <section className="container py-8 md:py-10">
+        <div className="mx-auto max-w-3xl">
+          {user ? (
+            <SuggestionForm onSuccess={fetchSuggestions} />
+          ) : (
+            <div className="rounded-lg border border-code-border bg-code-bg/60 p-6 text-center">
+              <p className="mb-4 text-sm text-muted-foreground">
+                Faça login pra deixar uma sugestão e votar nos temas.
+              </p>
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 rounded-md border border-primary/40 px-4 py-2 text-sm text-primary transition-colors hover:bg-primary/10"
+              >
+                entrar →
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
 
-              {user ? (
-                <div className="sticky top-24 relative z-20">
-                  <SuggestionForm onSuccess={fetchSuggestions} />
-                </div>
-              ) : (
-                <div className="p-6 rounded-lg bg-card/50 border border-border/50 text-center relative z-20">
-                  <LogIn className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="font-medium mb-2">Faça login para participar</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Envie sugestões e vote nos temas que você quer ver no blog.
-                  </p>
-                  <Button asChild className="w-full">
-                    <Link to="/login">Entrar</Link>
-                  </Button>
-                </div>
-              )}
+      {/* Lista */}
+      <section className="container pb-16">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-6 flex items-end justify-between">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-2xl font-bold">
+                <span className="text-muted-foreground">~/</span>sugestões
+              </h2>
+              <span className="text-sm text-muted-foreground">
+                {suggestions.length} {suggestions.length === 1 ? 'ideia' : 'ideias'} na toca
+              </span>
             </div>
 
-          {/* Coluna da Direita: Lista de Sugestões */}
-          <div className="lg:col-span-2 order-1 lg:order-2 space-y-6">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">Ordenado por votos</span>
+            <div className="flex items-center gap-2 text-sm">
+              {(['votos', 'recentes'] as SortBy[]).map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => setSortBy(opt)}
+                  className={`rounded-md px-2 py-1 transition-colors ${
+                    sortBy === opt
+                      ? 'border border-primary/40 text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
             </div>
-
-            {isLoading ? (
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <div 
-                    key={i}
-                    className="h-40 rounded-lg bg-card/50 animate-pulse border border-border/50"
-                  />
-                ))}
-              </div>
-            ) : suggestions.length === 0 ? (
-              <div className="text-center py-16">
-                <Lightbulb className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                <h3 className="font-medium mb-2">Nenhuma sugestão ainda</h3>
-                <p className="text-sm text-muted-foreground">
-                  Seja o primeiro a sugerir um tema!
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {suggestions.map((suggestion, index) => (
-                  <div 
-                    key={suggestion.id}
-                    className="animate-slide-up"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <SuggestionCard 
-                      suggestion={suggestion} 
-                      onVoteChange={fetchSuggestions}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
+
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground cursor-blink">
+              <span className="text-primary">corona@rathole</span>
+              <span className="text-muted-foreground">:~$</span> carregando sugestões
+            </p>
+          ) : suggestions.length === 0 ? (
+            <p className="text-muted-foreground">Nenhuma sugestão ainda. Seja o primeiro!</p>
+          ) : (
+            <div className="divide-y divide-border/40 border-t border-border/40">
+              {sorted.map((s) => (
+                <SuggestionCard key={s.id} suggestion={s} onVoteChange={fetchSuggestions} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </Layout>
