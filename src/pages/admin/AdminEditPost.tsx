@@ -47,7 +47,7 @@ const AdminEditPost = () => {
         title,
         excerpt,
         content,
-        cover_image: coverImage,
+        cover_image: coverImage || null,
         status,
       });
       alert('Post atualizado com sucesso!');
