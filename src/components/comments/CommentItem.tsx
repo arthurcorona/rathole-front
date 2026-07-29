@@ -25,7 +25,8 @@ interface CommentItemProps {
 export function CommentItem({ comment, postId, onReplyAdded, onDeleted, depth = 0 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const canDelete = isAdmin || (!!user && !!comment.user_id && user.id === comment.user_id);
 
   const displayName = comment.user?.username || comment.guest_name || 'Anônimo';
   const avatarUrl = comment.user?.avatar_url;
@@ -95,7 +96,7 @@ export function CommentItem({ comment, postId, onReplyAdded, onDeleted, depth = 
               </Button>
             )}
 
-            {isAdmin && (
+            {canDelete && (
               <Button
                 variant="ghost"
                 size="sm"

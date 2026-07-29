@@ -35,7 +35,8 @@ export interface Comment {
   created_at: string;
   post_id: string;
   // comment pode ser de user logado OU anônimo
-  user?: User; 
+  user_id?: string | null;
+  user?: User;
   guest_name?: string;
   parent_id?: string | null; //threads
 }
@@ -47,5 +48,6 @@ export interface Suggestion {
   status: 'pending' | 'reviewed' | 'completed';
   upvotes_count: number;
   created_at: string;
+  user_id?: string;
   user: User;
 }

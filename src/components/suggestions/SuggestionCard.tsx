@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from "@/lib/api";
 import { Suggestion } from "@/types";
@@ -20,10 +20,27 @@ function formatDate(iso: string): string {
 }
 
 export function SuggestionCard({ suggestion, onVoteChange }: SuggestionCardProps) {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [isVoting, setIsVoting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [hasVoted, setHasVoted] = useState(suggestion.has_voted || false);
   const [votesCount, setVotesCount] = useState(suggestion.upvotes_count);
+
+  const canDelete = isAdmin || (!!user && user.id === suggestion.user_id);
+
+  const handleDelete = async () => {
+    if (!window.confirm('Apagar esta sugestão?')) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/suggestions/${suggestion.id}`);
+      toast.success('Sugestão apagada');
+      onVoteChange?.(); // recarrega a lista
+    } catch (error) {
+      console.error('Error deleting suggestion:', error);
+      toast.error('Erro ao apagar sugestão');
+      setIsDeleting(false);
+    }
+  };
 
   const handleVote = async () => {
     if (!user) {
@@ -76,6 +93,16 @@ export function SuggestionCard({ suggestion, onVoteChange }: SuggestionCardProps
           <span className="font-semibold text-primary">@{suggestion.user?.username || 'anônimo'}</span>
           <span className="text-muted-foreground">·</span>
           <span className="text-muted-foreground">{formatDate(suggestion.created_at)}</span>
+          {canDelete && (
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              title="Apagar sugestão"
+              className="ml-1 text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
 
         <h3 className="text-base font-bold leading-snug tracking-tight md:text-lg">
