@@ -11,6 +11,7 @@ import { User as UserIcon, Calendar, Clock, ArrowLeft, Tag as TagIcon } from "lu
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { api } from "@/lib/api";
 import { readingTime } from "@/lib/readingTime";
+import { PostVoteButton } from "@/components/posts/PostVoteButton";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -129,6 +130,15 @@ const PostDetail = () => {
                 <Clock className="h-4 w-4" />
                 {readingTimeMin} min de leitura
               </span>
+            </div>
+
+            <div className="ml-auto">
+              <PostVoteButton
+                postId={post.id}
+                initialCount={post.upvotes_count ?? 0}
+                initialVoted={post.has_voted ?? false}
+                variant="inline"
+              />
             </div>
           </div>
         </header>

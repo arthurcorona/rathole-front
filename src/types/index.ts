@@ -24,8 +24,10 @@ export interface Post {
   created_at: string;
   updated_at: string;
   author_id: string;
+  upvotes_count?: number;
+  has_voted?: boolean;
   //join
-  author: User; 
+  author: User;
   tags: Tag[];
 }
 
