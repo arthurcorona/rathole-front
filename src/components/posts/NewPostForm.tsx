@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Post, User } from "@/types";
 import { api } from "@/lib/api";//api nova top
 import { useToast } from "@/hooks/use-toast";
+import { CoverImageInput } from "./CoverImageInput";
 
 type NewPostFormProps = {
   author: User;
@@ -141,17 +142,10 @@ export const NewPostForm = ({ author, onCreated, onCancel }: NewPostFormProps) =
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="cover_image">
-          URL da imagem de capa (opcional)
+        <label className="text-sm font-medium">
+          Imagem de capa (opcional)
         </label>
-        <input
-          id="cover_image"
-          type="text"
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-          value={coverImage}
-          onChange={(e) => setCoverImage(e.target.value)}
-          placeholder="https://..."
-        />
+        <CoverImageInput value={coverImage} onChange={setCoverImage} />
       </div>
 
       <div className="space-y-2">

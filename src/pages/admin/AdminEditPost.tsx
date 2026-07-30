@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
+import { CoverImageInput } from '@/components/posts/CoverImageInput';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const AdminEditPost = () => {
@@ -91,8 +92,8 @@ const AdminEditPost = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-1 block">Imagem de capa (URL)</label>
-            <Input value={coverImage} onChange={(e) => setCoverImage(e.target.value)} />
+            <label className="text-sm font-medium mb-1 block">Imagem de capa</label>
+            <CoverImageInput value={coverImage} onChange={setCoverImage} />
           </div>
 
           <div>
