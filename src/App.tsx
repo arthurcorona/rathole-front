@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Suggestions from './pages/Suggestions';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
@@ -41,6 +43,8 @@ function App() {
         {/* Rotas Públicas */}
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Auth />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/suggestions" element={<Suggestions />} />
         <Route path="/posts/:slug" element={<PostDetail />} />
         
