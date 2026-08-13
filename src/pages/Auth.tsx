@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -160,15 +160,21 @@ const Auth = () => {
                 </div>
               </CardContent>
 
-              <CardFooter>
-                <Button 
-                  type="submit" 
-                  className="w-full gap-2" 
+              <CardFooter className="flex-col gap-3">
+                <Button
+                  type="submit"
+                  className="w-full gap-2"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Entrando...' : 'Entrar'}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Esqueci minha senha
+                </Link>
               </CardFooter>
             </form>
           </TabsContent>
