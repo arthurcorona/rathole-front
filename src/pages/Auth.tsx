@@ -4,11 +4,11 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 // CORREÇÃO 1: Adicionei Terminal e ArrowRight
-import { User as UserIcon, Mail, Lock, Terminal, ArrowRight } from "lucide-react";
+import { User as UserIcon, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from "@/lib/api"; // Importar API para o Signup
@@ -97,20 +97,23 @@ const Auth = () => {
       <div className="absolute top-20 -left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 
-      <Card className="w-full max-w-md relative bg-card/80 backdrop-blur-xl border-border/50 animate-scale-in">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto p-3 rounded-xl bg-primary/10 border border-primary/20 w-fit">
-            <Terminal className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold">
-              rathole<span className="text-primary">.dev</span>
-            </CardTitle>
-            <CardDescription className="mt-2">
-              Acesse sua conta ou crie uma nova
-            </CardDescription>
-          </div>
-        </CardHeader>
+      <div className="w-full max-w-md relative overflow-hidden rounded-lg border border-code-border bg-code-bg shadow-xl animate-scale-in">
+        {/* barra de título do terminal */}
+        <div className="flex items-center gap-2 border-b border-code-border bg-muted/10 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-red-500/70" />
+          <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+          <span className="h-3 w-3 rounded-full bg-green-500/70" />
+          <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~/login</span>
+        </div>
+
+        {/* prompt */}
+        <div className="px-6 pt-5 text-sm">
+          <p>
+            <span className="text-primary">corona@rathole</span>
+            <span className="text-muted-foreground">:~$</span> ./acessar
+          </p>
+          <p className="mt-1 text-muted-foreground">Entre na sua conta ou crie uma nova.</p>
+        </div>
 
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mx-6 max-w-[calc(100%-3rem)]">
@@ -252,7 +255,7 @@ const Auth = () => {
             </form>
           </TabsContent>
         </Tabs>
-      </Card>
+      </div>
     </div>
   );
 };

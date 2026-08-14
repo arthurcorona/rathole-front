@@ -1,12 +1,30 @@
 import { useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { Lock, Terminal } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardFooter } from '@/components/ui/card';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+
+// janela de terminal reutilizada nas duas telas de reset
+function TerminalShell({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
+      <div className="w-full max-w-md relative overflow-hidden rounded-lg border border-code-border bg-code-bg shadow-xl animate-scale-in">
+        <div className="flex items-center gap-2 border-b border-code-border bg-muted/10 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-red-500/70" />
+          <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+          <span className="h-3 w-3 rounded-full bg-green-500/70" />
+          <span className="ml-3 text-xs text-muted-foreground">{title}</span>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const ResetPassword = () => {
   const [params] = useSearchParams();
@@ -49,79 +67,73 @@ const ResetPassword = () => {
   // Sem token na URL → link quebrado
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md relative bg-card/80 backdrop-blur-xl border-border/50">
-          <CardHeader className="text-center space-y-2">
-            <CardTitle className="text-xl font-bold">Link inválido</CardTitle>
-            <CardDescription>
-              Este link de redefinição está incompleto ou expirou.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter className="justify-center">
-            <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-              Pedir um novo link
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
+      <TerminalShell title="corona@rathole: ~/reset">
+        <div className="px-6 pt-5 text-sm">
+          <p>
+            <span className="text-primary">corona@rathole</span>
+            <span className="text-muted-foreground">:~$</span> ./nova-senha
+          </p>
+          <p className="mt-1 text-destructive">erro: link inválido ou incompleto.</p>
+        </div>
+        <CardFooter className="justify-center pt-4">
+          <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+            Pedir um novo link
+          </Link>
+        </CardFooter>
+      </TerminalShell>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
+    <TerminalShell title="corona@rathole: ~/reset">
+      {/* prompt */}
+      <div className="px-6 pt-5 text-sm">
+        <p>
+          <span className="text-primary">corona@rathole</span>
+          <span className="text-muted-foreground">:~$</span> ./nova-senha
+        </p>
+        <p className="mt-1 text-muted-foreground">Escolha uma nova senha para sua conta.</p>
+      </div>
 
-      <Card className="w-full max-w-md relative bg-card/80 backdrop-blur-xl border-border/50 animate-scale-in">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto p-3 rounded-xl bg-primary/10 border border-primary/20 w-fit">
-            <Terminal className="h-6 w-6 text-primary" />
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4 pt-4">
+          <div className="space-y-2">
+            <Label htmlFor="new-password" className="flex items-center gap-2">
+              <Lock className="h-4 w-4 text-muted-foreground" />
+              Nova senha
+            </Label>
+            <Input
+              id="new-password"
+              type="password"
+              placeholder="••••••••"
+              className="bg-background/50"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
-          <div>
-            <CardTitle className="text-2xl font-bold">Nova senha</CardTitle>
-            <CardDescription className="mt-2">Escolha uma nova senha para sua conta</CardDescription>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirm-password" className="flex items-center gap-2">
+              <Lock className="h-4 w-4 text-muted-foreground" />
+              Confirmar senha
+            </Label>
+            <Input
+              id="confirm-password"
+              type="password"
+              placeholder="••••••••"
+              className="bg-background/50"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
           </div>
-        </CardHeader>
-
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-password" className="flex items-center gap-2">
-                <Lock className="h-4 w-4 text-muted-foreground" />
-                Nova senha
-              </Label>
-              <Input
-                id="new-password"
-                type="password"
-                placeholder="••••••••"
-                className="bg-secondary/50"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password" className="flex items-center gap-2">
-                <Lock className="h-4 w-4 text-muted-foreground" />
-                Confirmar senha
-              </Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="••••••••"
-                className="bg-secondary/50"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Redefinindo...' : 'Redefinir senha'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Redefinindo...' : 'Redefinir senha'}
+          </Button>
+        </CardFooter>
+      </form>
+    </TerminalShell>
   );
 };
 
