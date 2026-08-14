@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft, Terminal, MailCheck } from 'lucide-react';
+import { Mail, ArrowLeft, MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardFooter } from '@/components/ui/card';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -32,21 +32,28 @@ const ForgotPassword = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
 
-      <Card className="w-full max-w-md relative bg-card/80 backdrop-blur-xl border-border/50 animate-scale-in">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto p-3 rounded-xl bg-primary/10 border border-primary/20 w-fit">
-            <Terminal className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold">Esqueci a senha</CardTitle>
-            <CardDescription className="mt-2">
-              {sent ? 'Verifique seu e-mail' : 'Enviaremos um link para redefinir sua senha'}
-            </CardDescription>
-          </div>
-        </CardHeader>
+      <div className="w-full max-w-md relative overflow-hidden rounded-lg border border-code-border bg-code-bg shadow-xl animate-scale-in">
+        {/* barra de título do terminal */}
+        <div className="flex items-center gap-2 border-b border-code-border bg-muted/10 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-red-500/70" />
+          <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+          <span className="h-3 w-3 rounded-full bg-green-500/70" />
+          <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~/reset</span>
+        </div>
+
+        {/* prompt */}
+        <div className="px-6 pt-5 text-sm">
+          <p>
+            <span className="text-primary">corona@rathole</span>
+            <span className="text-muted-foreground">:~$</span> ./recuperar-senha
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            {sent ? 'Verifique seu e-mail.' : 'Enviaremos um link para redefinir sua senha.'}
+          </p>
+        </div>
 
         {sent ? (
-          <CardContent className="space-y-4 text-center">
+          <CardContent className="space-y-4 pt-4 text-center">
             <MailCheck className="h-10 w-10 mx-auto text-primary" />
             <p className="text-sm text-muted-foreground leading-relaxed">
               Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha.
@@ -55,7 +62,7 @@ const ForgotPassword = () => {
           </CardContent>
         ) : (
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-4">
               <div className="space-y-2">
                 <Label htmlFor="forgot-email" className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
@@ -66,7 +73,7 @@ const ForgotPassword = () => {
                   type="email"
                   required
                   placeholder="seu@email.com"
-                  className="bg-secondary/50"
+                  className="bg-background/50"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -89,7 +96,7 @@ const ForgotPassword = () => {
             Voltar pro login
           </Link>
         </CardFooter>
-      </Card>
+      </div>
     </div>
   );
 };
