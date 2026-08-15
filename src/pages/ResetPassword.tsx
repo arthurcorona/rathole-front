@@ -67,10 +67,10 @@ const ResetPassword = () => {
   // Sem token na URL → link quebrado
   if (!token) {
     return (
-      <TerminalShell title="corona@rathole: ~/reset">
+      <TerminalShell title="user@rathole: ~/reset">
         <div className="px-6 pt-5 text-sm">
           <p>
-            <span className="text-primary">corona@rathole</span>
+            <span className="text-primary">user@rathole</span>
             <span className="text-muted-foreground">:~$</span> ./nova-senha
           </p>
           <p className="mt-1 text-destructive">erro: link inválido ou incompleto.</p>
@@ -85,11 +85,11 @@ const ResetPassword = () => {
   }
 
   return (
-    <TerminalShell title="corona@rathole: ~/reset">
+    <TerminalShell title="user@rathole: ~/reset">
       {/* prompt */}
       <div className="px-6 pt-5 text-sm">
         <p>
-          <span className="text-primary">corona@rathole</span>
+          <span className="text-primary">user@rathole</span>
           <span className="text-muted-foreground">:~$</span> ./nova-senha
         </p>
         <p className="mt-1 text-muted-foreground">Escolha uma nova senha para sua conta.</p>

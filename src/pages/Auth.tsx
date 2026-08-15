@@ -103,19 +103,10 @@ const Auth = () => {
           <span className="h-3 w-3 rounded-full bg-red-500/70" />
           <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
           <span className="h-3 w-3 rounded-full bg-green-500/70" />
-          <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~/login</span>
+          <span className="ml-3 text-xs text-muted-foreground">user@rathole: ~/login</span>
         </div>
 
-        {/* prompt */}
-        <div className="px-6 pt-5 text-sm">
-          <p>
-            <span className="text-primary">corona@rathole</span>
-            <span className="text-muted-foreground">:~$</span> ./acessar
-          </p>
-          <p className="mt-1 text-muted-foreground">Entre na sua conta ou crie uma nova.</p>
-        </div>
-
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs defaultValue="login" className="w-full pt-4">
           <TabsList className="grid w-full grid-cols-2 mx-6 max-w-[calc(100%-3rem)]">
             <TabsTrigger value="login">Entrar</TabsTrigger>
             <TabsTrigger value="signup">Cadastrar</TabsTrigger>

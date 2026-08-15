@@ -15,6 +15,7 @@ type SortBy = 'votos' | 'recentes';
 
 const Suggestions = () => {
   const { user } = useAuth();
+  const shellUser = user?.username || 'corona';
   const [suggestions, setSuggestions] = useState<SuggestionWithVoted[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortBy>('votos');
@@ -53,13 +54,13 @@ const Suggestions = () => {
             <span className="h-3 w-3 rounded-full bg-red-500/70" />
             <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
             <span className="h-3 w-3 rounded-full bg-green-500/70" />
-            <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~/sugestoes</span>
+            <span className="ml-3 text-xs text-muted-foreground">{shellUser}@rathole: ~/sugestoes</span>
           </div>
 
           <div className="space-y-4 p-5 text-sm leading-relaxed md:p-6">
             <div>
               <p>
-                <span className="text-primary">corona@rathole</span>
+                <span className="text-primary">{shellUser}@rathole</span>
                 <span className="text-muted-foreground">:~$</span> cat ./sugestoes.md
               </p>
               <p className="mt-1 text-muted-foreground">
@@ -69,7 +70,7 @@ const Suggestions = () => {
             </div>
 
             <p className="cursor-blink">
-              <span className="text-primary">corona@rathole</span>
+              <span className="text-primary">{shellUser}@rathole</span>
               <span className="text-muted-foreground">:~$</span> ./nova-sugestao
             </p>
           </div>
@@ -129,7 +130,7 @@ const Suggestions = () => {
 
           {isLoading ? (
             <p className="text-sm text-muted-foreground cursor-blink">
-              <span className="text-primary">corona@rathole</span>
+              <span className="text-primary">{shellUser}@rathole</span>
               <span className="text-muted-foreground">:~$</span> carregando sugestões
             </p>
           ) : suggestions.length === 0 ? (
