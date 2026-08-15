@@ -38,13 +38,13 @@ const ForgotPassword = () => {
           <span className="h-3 w-3 rounded-full bg-red-500/70" />
           <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
           <span className="h-3 w-3 rounded-full bg-green-500/70" />
-          <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~/reset</span>
+          <span className="ml-3 text-xs text-muted-foreground">user@rathole: ~/reset</span>
         </div>
 
         {/* prompt */}
         <div className="px-6 pt-5 text-sm">
           <p>
-            <span className="text-primary">corona@rathole</span>
+            <span className="text-primary">user@rathole</span>
             <span className="text-muted-foreground">:~$</span> ./recuperar-senha
           </p>
           <p className="mt-1 text-muted-foreground">

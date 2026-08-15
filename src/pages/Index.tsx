@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
+  const shellUser = user?.username || 'corona';
   
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,14 +59,14 @@ const Index = () => {
             <span className="h-3 w-3 rounded-full bg-red-500/70" />
             <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
             <span className="h-3 w-3 rounded-full bg-green-500/70" />
-            <span className="ml-3 text-xs text-muted-foreground">corona@rathole: ~</span>
+            <span className="ml-3 text-xs text-muted-foreground">{shellUser}@rathole: ~</span>
           </div>
 
           {/* corpo do terminal */}
           <div className="space-y-4 p-5 text-sm leading-relaxed md:p-6">
             <div>
               <p>
-                <span className="text-primary">corona@rathole</span>
+                <span className="text-primary">{shellUser}@rathole</span>
                 <span className="text-muted-foreground">:~$</span> cat README.md
               </p>
               <p className="mt-1 text-muted-foreground">
@@ -75,7 +76,7 @@ const Index = () => {
 
             <div>
               <p>
-                <span className="text-primary">corona@rathole</span>
+                <span className="text-primary">{shellUser}@rathole</span>
                 <span className="text-muted-foreground">:~$</span>{' '}
                 <Link
                   to="/about"
@@ -84,12 +85,12 @@ const Index = () => {
                   whoami
                 </Link>
               </p>
-              <p className="mt-1 text-muted-foreground">corona</p>
+              <p className="mt-1 text-muted-foreground">{shellUser}</p>
             </div>
 
             <div>
               <p>
-                <span className="text-primary">corona@rathole</span>
+                <span className="text-primary">{shellUser}@rathole</span>
                 <span className="text-muted-foreground">:~$</span> fortune
               </p>
               <p className="mt-1 text-muted-foreground">
@@ -99,7 +100,7 @@ const Index = () => {
             </div>
 
             <p className="cursor-blink">
-              <span className="text-primary">corona@rathole</span>
+              <span className="text-primary">{shellUser}@rathole</span>
               <span className="text-muted-foreground">:~$</span>
             </p>
           </div>
