@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { CoverImageInput } from '@/components/posts/CoverImageInput';
-import { ArrowLeft, Save } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { ArrowLeft, Save, Lock } from 'lucide-react';
 
 const AdminEditPost = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ const AdminEditPost = () => {
   const [content, setContent] = useState('');
   const [coverImage, setCoverImage] = useState('');
   const [status, setStatus] = useState('draft');
+  const [membersOnly, setMembersOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -31,6 +33,7 @@ const AdminEditPost = () => {
           setContent(post.content || '');
           setCoverImage(post.cover_image || '');
           setStatus(post.status);
+          setMembersOnly(post.visibility === 'members');
         }
       } catch (error) {
         console.error('Erro ao buscar post:', error);
@@ -50,6 +53,7 @@ const AdminEditPost = () => {
         content,
         cover_image: coverImage || null,
         status,
+        visibility: membersOnly ? 'members' : 'public',
       });
       alert('Post atualizado com sucesso!');
       navigate('/admin');
@@ -106,6 +110,17 @@ const AdminEditPost = () => {
               <option value="draft">Rascunho</option>
               <option value="published">Publicado</option>
             </select>
+          </div>
+
+          <div className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-3">
+            <label htmlFor="edit-members-only" className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+              <Lock className="h-4 w-4 text-primary" />
+              Restrito a membros
+              <span className="text-xs text-muted-foreground font-normal">
+                {membersOnly ? '(só membros ativos leem)' : '(público)'}
+              </span>
+            </label>
+            <Switch id="edit-members-only" checked={membersOnly} onCheckedChange={setMembersOnly} />
           </div>
 
           <div>

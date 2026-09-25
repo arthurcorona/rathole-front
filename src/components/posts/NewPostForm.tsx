@@ -3,6 +3,8 @@ import { Post, User } from "@/types";
 import { api } from "@/lib/api";//api nova top
 import { useToast } from "@/hooks/use-toast";
 import { CoverImageInput } from "./CoverImageInput";
+import { Switch } from "@/components/ui/switch";
+import { Lock } from "lucide-react";
 
 type NewPostFormProps = {
   author: User;
@@ -25,6 +27,7 @@ export const NewPostForm = ({ author, onCreated, onCancel }: NewPostFormProps) =
   const [content, setContent] = useState(''); 
   const [coverImage, setCoverImage] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+  const [membersOnly, setMembersOnly] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { toast } = useToast();
@@ -55,6 +58,7 @@ export const NewPostForm = ({ author, onCreated, onCancel }: NewPostFormProps) =
         content,
         cover_image: coverImage || null,
         status: 'draft',
+        visibility: membersOnly ? 'members' : 'public',
         tags: tagsArray
       });
 
@@ -68,6 +72,7 @@ export const NewPostForm = ({ author, onCreated, onCancel }: NewPostFormProps) =
       setContent('');
       setCoverImage('');
       setTagsInput('');
+      setMembersOnly(false);
 
       if (onCreated) onCreated();
     } catch (err: any) {
@@ -160,6 +165,17 @@ export const NewPostForm = ({ author, onCreated, onCancel }: NewPostFormProps) =
           onChange={(e) => setTagsInput(e.target.value)}
           placeholder="react, typescript, linux"
         />
+      </div>
+
+      <div className="flex items-center justify-between rounded-md border border-border bg-background/50 px-3 py-2">
+        <label htmlFor="members-only" className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+          <Lock className="h-4 w-4 text-primary" />
+          Restrito a membros
+          <span className="text-xs text-muted-foreground font-normal">
+            {membersOnly ? '(só membros ativos leem)' : '(público)'}
+          </span>
+        </label>
+        <Switch id="members-only" checked={membersOnly} onCheckedChange={setMembersOnly} />
       </div>
 
       {errorMsg && (

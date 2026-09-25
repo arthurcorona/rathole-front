@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,13 @@ import { Post, Suggestion, User } from '@/types';
 import { Plus, Edit, Trash2, FileText, ShieldAlert, Lightbulb, Users as UsersIcon, Crown } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { RadarAdmin } from '@/components/radar/RadarAdmin';
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [userQuery, setUserQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchPosts = async () => {
@@ -32,9 +34,9 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (q = '') => {
     try {
-      const response = await api.get<User[]>('/users');
+      const response = await api.get<User[]>('/users', { params: q ? { q } : {} });
       setUsers(response.data);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
@@ -44,6 +46,17 @@ const AdminDashboard = () => {
   useEffect(() => {
     Promise.all([fetchPosts(), fetchSuggestions(), fetchUsers()]).finally(() => setIsLoading(false));
   }, []);
+
+  // busca de usuários com debounce (300ms); pula a 1ª execução (carga inicial já feita acima)
+  const firstUserSearch = useRef(true);
+  useEffect(() => {
+    if (firstUserSearch.current) {
+      firstUserSearch.current = false;
+      return;
+    }
+    const t = setTimeout(() => fetchUsers(userQuery), 300);
+    return () => clearTimeout(t);
+  }, [userQuery]);
 
   const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm("Tem certeza que deseja apagar este post? Essa ação não tem volta!");
@@ -116,8 +129,11 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
+        {/* Radar: curadoria das notícias (pensado para o celular) */}
+        <RadarAdmin />
+
         {/* Lista de Posts */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+        <div className="mt-10 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
           {isLoading ? (
             <div className="p-8 text-center text-muted-foreground animate-pulse">
               Carregando dados da base...
@@ -236,10 +252,19 @@ const AdminDashboard = () => {
 
         {/* Usuários / Membership */}
         <div className="mt-10">
-          <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-            <UsersIcon className="h-5 w-5 text-primary" />
-            Usuários
-          </h2>
+          <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <UsersIcon className="h-5 w-5 text-primary" />
+              Usuários
+            </h2>
+            <input
+              type="text"
+              value={userQuery}
+              onChange={(e) => setUserQuery(e.target.value)}
+              placeholder="buscar por nome ou e-mail..."
+              className="w-full sm:max-w-xs rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
           <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
             {isLoading ? (
               <div className="p-8 text-center text-muted-foreground animate-pulse">

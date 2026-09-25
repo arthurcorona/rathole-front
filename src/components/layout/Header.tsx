@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { LogIn, LogOut, User, Shield } from 'lucide-react';
+import { LogIn, LogOut, User, Shield, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function Header() {
   // CORREÇÃO 1: Removido 'profile', agora usamos apenas o 'user'
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, isMember, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
@@ -48,6 +48,12 @@ export function Header() {
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Sobre
         </Link>
+          <Link
+            to="/rataria"
+            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Crown className="h-3.5 w-3.5" />
+            Rataria
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -76,7 +82,7 @@ export function Header() {
                     <div className="flex flex-col space-y-0.5">
                       <span className="text-sm font-medium">{user.username}</span>
                       <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                        {isAdmin ? 'Administrador' : 'Leitor'}
+                        {isAdmin ? 'Administrador' : isMember ? 'Membro' : 'Leitor'}
                       </span>
                     </div>
                   </div>
@@ -93,6 +99,13 @@ export function Header() {
                   </DropdownMenuItem>
                 )}
                 
+                <DropdownMenuItem asChild>
+                  <Link to="/rataria" className="cursor-pointer flex items-center">
+                    <Crown className="mr-2 h-4 w-4" />
+                    Rataria
+                  </Link>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem asChild>
                   <Link to="/profile" className="cursor-pointer flex items-center">
                     <User className="mr-2 h-4 w-4" />

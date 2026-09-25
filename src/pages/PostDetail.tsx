@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Post } from "@/types";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { User as UserIcon, Calendar, Clock, ArrowLeft, Tag as TagIcon } from "lucide-react";
+import { User as UserIcon, Calendar, Clock, ArrowLeft, Tag as TagIcon, Lock, LogIn } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { api } from "@/lib/api";
+import { isAxiosError } from 'axios';
 import { readingTime } from "@/lib/readingTime";
 import { PostVoteButton } from "@/components/posts/PostVoteButton";
 import ReactMarkdown from 'react-markdown';
@@ -17,18 +19,25 @@ import remarkGfm from 'remark-gfm';
 
 const PostDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user, isMember } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
       if (!slug) return;
 
+      setIsLoading(true);
+      setNotFound(false);
       try {
         // O Backend agora retorna tudo pronto: Post + Author + Tags
         const response = await api.get<Post>(`/posts/${slug}`);
         setPost(response.data);
       } catch (error) {
+        // O back responde 404 tanto para post inexistente quanto para post de membros
+        // aberto por quem não é membro (não revela que ele existe).
+        if (isAxiosError(error) && error.response?.status === 404) setNotFound(true);
         console.error('Error fetching post:', error);
       } finally {
         setIsLoading(false);
@@ -36,7 +45,7 @@ const PostDetail = () => {
     };
 
     fetchPost();
-  }, [slug]);
+  }, [slug, user?.id]);
 
   if (isLoading) {
     return (
@@ -53,16 +62,56 @@ const PostDetail = () => {
   }
 
   if (!post) {
+    // Quem não é membro pode estar batendo num post restrito: oferece o caminho em vez de erro seco.
+    const maybeRestricted = notFound && !isMember;
     return (
       <Layout>
-        <div className="container max-w-4xl py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">Post não encontrado</h1>
-          <Button asChild variant="outline">
-            <Link to="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para Home
-            </Link>
-          </Button>
+        <div className="container max-w-xl py-16 text-center space-y-6 animate-fade-in">
+          {maybeRestricted ? (
+            <>
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Lock className="h-7 w-7" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold">Post não encontrado ou exclusivo para membros</h1>
+                <p className="text-muted-foreground">
+                  Se este link veio da área de membros, ele só abre para membros ativos.
+                  {user
+                    ? ' Sua conta ainda não tem membership ativa.'
+                    : ' Entre na sua conta para continuar.'}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {!user && (
+                  <Button asChild className="gap-2">
+                    <Link to="/login">
+                      <LogIn className="h-4 w-4" />
+                      Entrar
+                    </Link>
+                  </Button>
+                )}
+                <Button asChild variant="outline" className="gap-2">
+                  <Link to="/about">Como virar membro</Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Voltar para Home
+                  </Link>
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold">Post não encontrado</h1>
+              <Button asChild variant="outline">
+                <Link to="/">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Voltar para Home
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </Layout>
     );
@@ -85,10 +134,16 @@ const PostDetail = () => {
 
         {/* Header */}
         <header className="space-y-6 mb-12 animate-fade-in">
-          {/* Renderiza as Tags vindas do Backend */}
-          {post.tags && post.tags.length > 0 && (
+          {/* Badge de membros + Tags vindas do Backend */}
+          {(post.visibility === 'members' || (post.tags && post.tags.length > 0)) && (
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
+              {post.visibility === 'members' && (
+                <Badge className="gap-1 bg-primary text-primary-foreground hover:bg-primary/90 border-0">
+                  <Lock className="w-3 h-3" />
+                  Membros
+                </Badge>
+              )}
+              {post.tags?.map((tag) => (
                 <Badge key={tag.id} className="tag-badge bg-primary/10 text-primary hover:bg-primary/20 border-0">
                   <TagIcon className="w-3 h-3 mr-1" />
                   {tag.name}

@@ -35,6 +35,11 @@ export function Footer() {
               className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sobre
             </Link>
+            <Link 
+              to="/rataria" 
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Rataria
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">

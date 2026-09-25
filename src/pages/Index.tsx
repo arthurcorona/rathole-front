@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { PostGrid } from '@/components/posts/PostGrid';
 import { NewPostForm } from '@/components/posts/NewPostForm';
+import { RadarWeekly } from '@/components/radar/RadarWeekly';
 import { api } from "@/lib/api"; 
 import { useAuth } from "@/contexts/AuthContext"; 
 import { Post } from "@/types";
@@ -104,6 +105,13 @@ const Index = () => {
               <span className="text-muted-foreground">:~$</span>
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Dossiê semanal (público): bloco compacto, some quando ainda não há dossiê */}
+      <section className="container pt-8">
+        <div className="mx-auto max-w-3xl animate-fade-in">
+          <RadarWeekly />
         </div>
       </section>
 

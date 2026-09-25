@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { User as UserIcon, Calendar, ArrowRight } from "lucide-react"; // Importando os ícones certos
+import { User as UserIcon, Calendar, ArrowRight, Lock } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Post } from "@/types"; // Usando o tipo oficial Post
@@ -30,9 +30,15 @@ export function PostCard({ post, index = 0 }: PostCardProps) {
         )}
         
         <CardHeader className="space-y-3 pb-3">
-          {post.tags && post.tags.length > 0 && (
+          {(post.visibility === 'members' || (post.tags && post.tags.length > 0)) && (
             <div className="flex flex-wrap gap-2">
-              {post.tags.slice(0, 3).map((tag) => (
+              {post.visibility === 'members' && (
+                <Badge className="gap-1 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium">
+                  <Lock className="h-3 w-3" />
+                  Membros
+                </Badge>
+              )}
+              {post.tags?.slice(0, 3).map((tag) => (
                 <Badge 
                   key={tag.id} 
                   variant="secondary" 

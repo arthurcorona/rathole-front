@@ -9,6 +9,8 @@ interface AuthContextType {
   updateUser: (data: Partial<User>) => void;
   loading: boolean;
   isAdmin: boolean;
+  /** membro ativo (member_until no futuro) ou admin */
+  isMember: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -40,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: email,
       role: apiUser.role,
       avatar_url: apiUser.avatar_url || apiUser.avatar,
+      member_until: apiUser.member_until ?? null,
       created_at: new Date().toISOString(),
     };
 
@@ -61,6 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('rathole_user', JSON.stringify(updatedUser));
   }
 
+  const isAdmin = user?.role === 'admin';
+  const isMember =
+    isAdmin || (!!user?.member_until && new Date(user.member_until) > new Date());
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -68,7 +75,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut,
       updateUser,
       loading,
-      isAdmin: user?.role === 'admin',
+      isAdmin,
+      isMember,
     }}>
       {children}
     </AuthContext.Provider>
