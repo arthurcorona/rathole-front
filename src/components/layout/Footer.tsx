@@ -36,9 +36,9 @@ export function Footer() {
               Sobre
             </Link>
             <Link 
-              to="/rataria" 
+              to="/prime" 
               className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Rataria
+              Prime
             </Link>
           </nav>
 

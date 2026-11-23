@@ -9,7 +9,10 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import About from './pages/About';
 import AdminEditPost from './pages/admin/AdminEditPost';
-import Rataria from './pages/Rataria';
+import Prime from './pages/Prime';
+import PrimeOsint from './pages/PrimeOsint';
+import PrimeOsintCase from './pages/PrimeOsintCase';
+import PrimeOsintTarget from './pages/PrimeOsintTarget';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/layout/Layout';
 
@@ -48,9 +51,34 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/suggestions" element={<Suggestions />} />
         <Route path="/posts/:slug" element={<PostDetail />} />
-        {/* Rataria (área de membros): a própria página mostra a landing para quem não é membro */}
-        <Route path="/rataria" element={<Rataria />} />
-        
+        {/* Prime (área de membros): a própria página mostra a landing para quem não é membro */}
+        <Route path="/prime" element={<Prime />} />
+        {/* Painel OSINT (ponte para o ratosint): fase de teste, só admin */}
+        <Route
+          path="/prime/osint"
+          element={
+            <AdminRoute>
+              <PrimeOsint />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/prime/osint/casos/:caseId"
+          element={
+            <AdminRoute>
+              <PrimeOsintCase />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/prime/osint/alvos/:targetId"
+          element={
+            <AdminRoute>
+              <PrimeOsintTarget />
+            </AdminRoute>
+          }
+        />
+
         {/* Rota Privada Comum */}
         <Route 
           path="/profile" 

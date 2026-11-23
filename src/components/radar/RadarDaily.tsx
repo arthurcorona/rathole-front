@@ -1,22 +1,30 @@
 import { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Radio, ExternalLink, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Radio, ChevronRight, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRadarDaily } from '@/hooks/useRadar';
+import { RadarItemDialog } from './RadarItemDialog';
 import type { RadarItem } from '@/types';
 
 const COMPACT_LIMIT = 6;
 
-function RadarLine({ item, showDate }: { item: RadarItem; showDate?: boolean }) {
+function RadarLine({
+  item,
+  showDate,
+  onOpen,
+}: {
+  item: RadarItem;
+  showDate?: boolean;
+  onOpen: (item: RadarItem) => void;
+}) {
   return (
     <li>
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group -mx-2 flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/30"
+      <button
+        type="button"
+        onClick={() => onOpen(item)}
+        className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-md px-2 py-2 text-left transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
       >
         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
         <span className="min-w-0 flex-1">
@@ -30,8 +38,8 @@ function RadarLine({ item, showDate }: { item: RadarItem; showDate?: boolean }) 
             )}
           </span>
         </span>
-        <ExternalLink className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-      </a>
+        <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+      </button>
     </li>
   );
 }
@@ -39,6 +47,7 @@ function RadarLine({ item, showDate }: { item: RadarItem; showDate?: boolean }) 
 /** Card compacto da edição diária (membros). "ver todos" abre os últimos 7 dias. */
 export function RadarDaily() {
   const [expanded, setExpanded] = useState(false);
+  const [selected, setSelected] = useState<RadarItem | null>(null);
   const today = useRadarDaily({});
   const week = useRadarDaily({ days: 7 }, expanded);
 
@@ -80,7 +89,7 @@ export function RadarDaily() {
         ) : (
           <ul className="space-y-0.5">
             {(expanded ? items : items.slice(0, COMPACT_LIMIT)).map((item) => (
-              <RadarLine key={item.id} item={item} showDate={expanded} />
+              <RadarLine key={item.id} item={item} showDate={expanded} onOpen={setSelected} />
             ))}
           </ul>
         )}
@@ -103,6 +112,8 @@ export function RadarDaily() {
           </Button>
         </div>
       </CardContent>
+
+      <RadarItemDialog item={selected} onClose={() => setSelected(null)} />
     </Card>
   );
 }

@@ -16,7 +16,7 @@ function Terminal({ user, children }: { user: string; children: React.ReactNode 
         <span className="h-3 w-3 rounded-full bg-red-500/70" />
         <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
         <span className="h-3 w-3 rounded-full bg-green-500/70" />
-        <span className="ml-3 text-xs text-muted-foreground">{user}@rathole: ~/rataria</span>
+        <span className="ml-3 text-xs text-muted-foreground">{user}@rathole: ~/prime</span>
       </div>
       <div className="space-y-4 p-5 text-sm leading-relaxed md:p-6">{children}</div>
     </div>
@@ -32,7 +32,7 @@ function Prompt({ user, cmd }: { user: string; cmd: string }) {
   );
 }
 
-/** O que a Rataria oferece. Reaproveitado na landing e no `ls` dos membros. */
+/** O que a Prime oferece. Reaproveitado na landing e no `ls` dos membros. */
 const MODULES = [
   { icon: Radio, name: 'radar/', desc: 'edição diária de notícias de segurança e privacidade, curada à mão' },
   { icon: FileText, name: 'posts/', desc: 'artigos exclusivos, marcados com o cadeado' },
@@ -40,21 +40,21 @@ const MODULES = [
 ];
 
 /** Landing para visitante ou leitor sem membership ativa. */
-function RatariaLanding({ loggedIn }: { loggedIn: boolean }) {
+function PrimeLanding({ loggedIn }: { loggedIn: boolean }) {
   const shellUser = 'visitante';
   return (
     <Layout>
       <section className="container pt-10 md:pt-14">
         <Terminal user={shellUser}>
           <div>
-            <Prompt user={shellUser} cmd="cd ~/rataria" />
-            <p className="mt-1 text-destructive/90">bash: cd: rataria: Permission denied</p>
+            <Prompt user={shellUser} cmd="cd ~/prime" />
+            <p className="mt-1 text-destructive/90">bash: cd: prime: Permission denied</p>
           </div>
 
           <div>
             <Prompt user={shellUser} cmd="cat MEMBERS.md" />
             <p className="mt-1 text-muted-foreground">
-              A Rataria é a toca dos membros do RatHole. Quem apoia o blog ganha acesso a:
+              A Prime é a toca dos membros do RatHole. Quem apoia o blog ganha acesso a:
             </p>
             <ul className="mt-3 space-y-2">
               {MODULES.map(({ icon: Icon, name, desc }) => (
@@ -104,7 +104,7 @@ function RatariaLanding({ loggedIn }: { loggedIn: boolean }) {
   );
 }
 
-const Rataria = () => {
+const Prime = () => {
   const { user, loading, isMember, isAdmin } = useAuth();
 
   if (loading) {
@@ -115,7 +115,7 @@ const Rataria = () => {
     );
   }
 
-  if (!isMember) return <RatariaLanding loggedIn={!!user} />;
+  if (!isMember) return <PrimeLanding loggedIn={!!user} />;
 
   const shellUser = user?.username || 'rato';
   const until = user?.member_until ? new Date(user.member_until) : null;
@@ -138,7 +138,7 @@ const Rataria = () => {
           </div>
 
           <div>
-            <Prompt user={shellUser} cmd="ls ~/rataria" />
+            <Prompt user={shellUser} cmd="ls ~/prime" />
             <ul className="mt-1 grid gap-1 sm:grid-cols-3">
               {MODULES.map(({ icon: Icon, name }) => (
                 <li key={name} className="flex items-center gap-2 font-mono text-foreground">
@@ -160,7 +160,7 @@ const Rataria = () => {
       <section className="container py-12 md:py-16">
         <div className="mb-6 flex flex-col gap-1">
           <h2 className="text-2xl font-bold">
-            <span className="text-muted-foreground">~/</span>rataria
+            <span className="text-muted-foreground">~/</span>prime
           </h2>
           <span className="text-sm text-muted-foreground">área de membros · conteúdo exclusivo</span>
         </div>
@@ -168,21 +168,42 @@ const Rataria = () => {
         <div className="grid gap-6 md:grid-cols-2">
           <RadarDaily />
 
-          {/* placeholder da próxima feature */}
-          <Card className="border-dashed border-border/60 bg-card/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg text-muted-foreground">
-                <Search className="h-5 w-5" />
-                Painel OSINT
-                <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
-                  em breve
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 text-sm text-muted-foreground">
-              Consultas de domínio, IP e CVE direto daqui, sem limite para membros.
-            </CardContent>
-          </Card>
+          {/* Painel OSINT: em teste só para admin; membros veem "em breve" */}
+          {isAdmin ? (
+            <Link to="/prime/osint" className="group block">
+              <Card className="h-full border-border/60 bg-card/60 backdrop-blur-sm transition-colors group-hover:border-primary/50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Search className="h-5 w-5 text-primary" />
+                    Painel OSINT
+                    <span className="ml-auto rounded-full border border-primary/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                      teste · admin
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between gap-3 pt-0 text-sm text-muted-foreground">
+                  Consultas do ratosint direto daqui: site, domínio, CNPJ, processos e mais.
+                  <ArrowRight className="h-4 w-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" />
+                </CardContent>
+              </Card>
+            </Link>
+          ) : (
+            <Card className="border-dashed border-border/60 bg-card/30">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg text-muted-foreground">
+                  <Search className="h-5 w-5" />
+                  Painel OSINT
+                  <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                    em breve
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 text-sm text-muted-foreground">
+                Consultas em fontes abertas (site, domínio, CNPJ e mais) direto daqui. Está em teste e chega aos membros em
+                breve.
+              </CardContent>
+            </Card>
+          )}
 
           {/* atalho para os posts restritos */}
           <Card className="bg-card/60 backdrop-blur-sm border-border/60 md:col-span-2">
@@ -206,4 +227,4 @@ const Rataria = () => {
   );
 };
 
-export default Rataria;
+export default Prime;

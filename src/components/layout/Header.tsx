@@ -49,10 +49,10 @@ export function Header() {
               Sobre
         </Link>
           <Link
-            to="/rataria"
+            to="/prime"
             className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             <Crown className="h-3.5 w-3.5" />
-            Rataria
+            Prime
           </Link>
         </nav>
 
@@ -100,9 +100,9 @@ export function Header() {
                 )}
                 
                 <DropdownMenuItem asChild>
-                  <Link to="/rataria" className="cursor-pointer flex items-center">
+                  <Link to="/prime" className="cursor-pointer flex items-center">
                     <Crown className="mr-2 h-4 w-4" />
-                    Rataria
+                    Prime
                   </Link>
                 </DropdownMenuItem>
 

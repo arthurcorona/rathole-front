@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Newspaper, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Newspaper, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRadarWeekly } from '@/hooks/useRadar';
+import { RadarItemDialog } from './RadarItemDialog';
+import type { RadarItem } from '@/types';
 
 const COMPACT_LIMIT = 5;
 
@@ -17,6 +19,7 @@ interface RadarWeeklyProps {
 /** Card público do Dossiê semanal: ranking numerado pela posição definida na curadoria. */
 export function RadarWeekly({ hideWhenEmpty = true, className }: RadarWeeklyProps) {
   const [expanded, setExpanded] = useState(false);
+  const [selected, setSelected] = useState<RadarItem | null>(null);
   const { data, isLoading, isError } = useRadarWeekly();
   const items = data?.items ?? [];
 
@@ -49,11 +52,10 @@ export function RadarWeekly({ hideWhenEmpty = true, className }: RadarWeeklyProp
           <ol className="space-y-0.5">
             {visible.map((item, i) => (
               <li key={item.id}>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group -mx-2 flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/30"
+                <button
+                  type="button"
+                  onClick={() => setSelected(item)}
+                  className="group -mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-md px-2 py-2 text-left transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                   <span className="w-6 shrink-0 font-mono text-sm tabular-nums text-primary">
                     {String(item.rank ?? i + 1).padStart(2, '0')}
@@ -64,8 +66,8 @@ export function RadarWeekly({ hideWhenEmpty = true, className }: RadarWeeklyProp
                     </span>
                     <span className="mt-0.5 block text-xs text-muted-foreground">{item.source}</span>
                   </span>
-                  <ExternalLink className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                </a>
+                  <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                </button>
               </li>
             ))}
           </ol>
@@ -88,6 +90,8 @@ export function RadarWeekly({ hideWhenEmpty = true, className }: RadarWeeklyProp
           </div>
         )}
       </CardContent>
+
+      <RadarItemDialog item={selected} onClose={() => setSelected(null)} />
     </Card>
   );
 }
