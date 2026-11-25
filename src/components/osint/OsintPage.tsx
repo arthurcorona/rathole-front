@@ -38,14 +38,14 @@ function ServiceStatus({ status }: { status: ReturnType<typeof useOsintStatus> }
 
 interface OsintPageProps {
   back: { to: string; label: string };
-  /** caminho no estilo terminal, ex.: ["prime", "osint"] -> ~/prime/osint */
+  /** caminho no estilo terminal, ex.: ["prime", "csi"] -> ~/prime/csi */
   path: string[];
   subtitle?: React.ReactNode;
   /** recebe `online`: só dispare chamadas ao ratosint depois que ele respondeu */
   children: (online: boolean) => React.ReactNode;
 }
 
-/** Moldura das telas do OSINT: voltar, título em estilo terminal e status do ratosint. */
+/** Moldura das telas do CSI: voltar, título em estilo terminal e status do ratosint. */
 export function OsintPage({ back, path, subtitle, children }: OsintPageProps) {
   const status = useOsintStatus();
   const head = path.slice(0, -1);

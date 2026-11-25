@@ -36,7 +36,7 @@ function Prompt({ user, cmd }: { user: string; cmd: string }) {
 const MODULES = [
   { icon: Radio, name: 'radar/', desc: 'edição diária de notícias de segurança e privacidade, com destaques escolhidos à mão' },
   { icon: FileText, name: 'posts/', desc: 'artigos exclusivos, marcados com o cadeado' },
-  { icon: Search, name: 'osint/', desc: 'painel de consultas OSINT (em breve)' },
+  { icon: Search, name: 'csi/', desc: 'investigações e consultas em fontes abertas (em breve)' },
 ];
 
 /** Landing para visitante ou leitor sem membership ativa. */
@@ -168,21 +168,21 @@ const Prime = () => {
         <div className="grid gap-6 md:grid-cols-2">
           <RadarDaily />
 
-          {/* Painel OSINT: em teste só para admin; membros veem "em breve" */}
+          {/* CSI: em teste só para admin; membros veem "em breve" */}
           {isAdmin ? (
-            <Link to="/prime/osint" className="group block">
+            <Link to="/prime/csi" className="group block">
               <Card className="h-full border-border/60 bg-card/60 backdrop-blur-sm transition-colors group-hover:border-primary/50">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Search className="h-5 w-5 text-primary" />
-                    Painel OSINT
+                    CSI
                     <span className="ml-auto rounded-full border border-primary/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
                       teste · admin
                     </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between gap-3 pt-0 text-sm text-muted-foreground">
-                  Consultas do ratosint direto daqui: site, domínio, CNPJ, processos e mais.
+                  Investigações e consultas do ratosint direto daqui: site, domínio, CNPJ, processos e mais.
                   <ArrowRight className="h-4 w-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" />
                 </CardContent>
               </Card>
@@ -192,14 +192,14 @@ const Prime = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-lg text-muted-foreground">
                   <Search className="h-5 w-5" />
-                  Painel OSINT
+                  CSI
                   <span className="ml-auto rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
                     em breve
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0 text-sm text-muted-foreground">
-                Consultas em fontes abertas (site, domínio, CNPJ e mais) direto daqui. Está em teste e chega aos membros em
+                Investigações e consultas em fontes abertas (site, domínio, CNPJ e mais) direto daqui. Está em teste e chega aos membros em
                 breve.
               </CardContent>
             </Card>

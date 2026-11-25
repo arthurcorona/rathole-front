@@ -35,7 +35,7 @@ function CaseList({ online }: { online: boolean }) {
     createCase.mutate(
       { name: name.trim(), description: description.trim() || null },
       {
-        onSuccess: (created) => navigate(`/prime/osint/casos/${created.id}`),
+        onSuccess: (created) => navigate(`/prime/csi/casos/${created.id}`),
         onError: (err) => toast.error(apiErrorMessage(err, 'Não consegui criar a investigação.')),
       },
     );
@@ -93,7 +93,7 @@ function CaseList({ online }: { online: boolean }) {
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((c) => (
             <li key={c.id}>
-              <Link to={`/prime/osint/casos/${c.id}`} className="group block h-full">
+              <Link to={`/prime/csi/casos/${c.id}`} className="group block h-full">
                 <Card
                   className={cn(
                     'h-full border-border/60 bg-card/60 backdrop-blur-sm transition-colors group-hover:border-primary/50',
@@ -214,7 +214,7 @@ const PrimeOsint = () => {
   return (
     <OsintPage
       back={{ to: '/prime', label: 'prime' }}
-      path={['prime', 'osint']}
+      path={['prime', 'csi']}
       subtitle="investigações e consultas do ratosint · cada usuário vê só as suas · fase de teste (só admin)"
     >
       {(online) => (

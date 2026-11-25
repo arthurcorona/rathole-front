@@ -49,7 +49,7 @@ function CaseInfo({ data }: { data: CsiCaseDetail }) {
   const remove = () => {
     if (!window.confirm(`Apagar a investigação "${data.name}" com todos os alvos e notas? Não tem volta.`)) return;
     deleteCase.mutate(data.id, {
-      onSuccess: () => navigate('/prime/osint', { replace: true }),
+      onSuccess: () => navigate('/prime/csi', { replace: true }),
       onError: (err) => toast.error(apiErrorMessage(err, 'Não consegui apagar.')),
     });
   };
@@ -200,7 +200,7 @@ function Targets({ data }: { data: CsiCaseDetail }) {
             {data.targets.map((t) => (
               <li key={t.id}>
                 <Link
-                  to={`/prime/osint/alvos/${t.id}`}
+                  to={`/prime/csi/alvos/${t.id}`}
                   className="group flex h-full items-start gap-3 rounded-md border border-border/60 p-3 transition-colors hover:border-primary/50"
                 >
                   <TargetKindIcon kind={t.kind} className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -230,7 +230,7 @@ const PrimeOsintCase = () => {
   const name = caseQ.data?.name ?? '…';
 
   return (
-    <OsintPage back={{ to: '/prime/osint', label: 'investigações' }} path={['prime', 'osint', name]}>
+    <OsintPage back={{ to: '/prime/csi', label: 'investigações' }} path={['prime', 'csi', name]}>
       {(isOnline) => {
         if (!isOnline) return <p className="text-sm text-muted-foreground">aguardando o ratosint…</p>;
         if (caseQ.isLoading) return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />;
@@ -240,7 +240,7 @@ const PrimeOsintCase = () => {
               {isNotFound(caseQ.error)
                 ? 'Investigação não encontrada.'
                 : apiErrorMessage(caseQ.error, 'Não consegui carregar a investigação.')}{' '}
-              <Link to="/prime/osint" className="text-primary hover:underline">
+              <Link to="/prime/csi" className="text-primary hover:underline">
                 voltar
               </Link>
             </p>

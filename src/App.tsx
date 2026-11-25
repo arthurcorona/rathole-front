@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import ForgotPassword from './pages/ForgotPassword';
@@ -40,6 +40,12 @@ const AdminRoute = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
+/** O CSI já morou em /prime/osint: links antigos caem no mesmo lugar em /prime/csi. */
+const LegacyOsintRedirect = () => {
+  const { pathname, search } = useLocation();
+  return <Navigate to={pathname.replace(/^\/prime\/osint/, '/prime/csi') + search} replace />;
+};
+
 function App() {
   return (
     <BrowserRouter>
@@ -53,9 +59,10 @@ function App() {
         <Route path="/posts/:slug" element={<PostDetail />} />
         {/* Prime (área de membros): a própria página mostra a landing para quem não é membro */}
         <Route path="/prime" element={<Prime />} />
-        {/* Painel OSINT (ponte para o ratosint): fase de teste, só admin */}
+        {/* CSI (investigações e consultas, ponte para o ratosint): fase de teste, só admin */}
+        <Route path="/prime/osint/*" element={<LegacyOsintRedirect />} />
         <Route
-          path="/prime/osint"
+          path="/prime/csi"
           element={
             <AdminRoute>
               <PrimeOsint />
@@ -63,7 +70,7 @@ function App() {
           }
         />
         <Route
-          path="/prime/osint/casos/:caseId"
+          path="/prime/csi/casos/:caseId"
           element={
             <AdminRoute>
               <PrimeOsintCase />
@@ -71,7 +78,7 @@ function App() {
           }
         />
         <Route
-          path="/prime/osint/alvos/:targetId"
+          path="/prime/csi/alvos/:targetId"
           element={
             <AdminRoute>
               <PrimeOsintTarget />

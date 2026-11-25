@@ -55,7 +55,7 @@ function TargetInfo({ data }: { data: CsiTargetDetail }) {
   const remove = () => {
     if (!window.confirm(`Apagar o alvo "${data.name}" com as notas dele? Não tem volta.`)) return;
     deleteTarget.mutate(data.id, {
-      onSuccess: () => navigate(`/prime/osint/casos/${data.case_id}`, { replace: true }),
+      onSuccess: () => navigate(`/prime/csi/casos/${data.case_id}`, { replace: true }),
       onError: (err) => toast.error(apiErrorMessage(err, 'Não consegui apagar.')),
     });
   };
@@ -274,11 +274,11 @@ const PrimeOsintTarget = () => {
 
   const caseName = caseQ.data?.name ?? 'caso';
   const back = target.data
-    ? { to: `/prime/osint/casos/${target.data.case_id}`, label: caseName }
-    : { to: '/prime/osint', label: 'investigações' };
+    ? { to: `/prime/csi/casos/${target.data.case_id}`, label: caseName }
+    : { to: '/prime/csi', label: 'investigações' };
 
   return (
-    <OsintPage back={back} path={['prime', 'osint', caseName, target.data?.name ?? '…']}>
+    <OsintPage back={back} path={['prime', 'csi', caseName, target.data?.name ?? '…']}>
       {(isOnline) => {
         if (!isOnline) return <p className="text-sm text-muted-foreground">aguardando o ratosint…</p>;
         if (target.isLoading) return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />;
@@ -286,7 +286,7 @@ const PrimeOsintTarget = () => {
           return (
             <p className="text-sm text-muted-foreground">
               {isNotFound(target.error) ? 'Alvo não encontrado.' : apiErrorMessage(target.error, 'Não consegui carregar o alvo.')}{' '}
-              <Link to="/prime/osint" className="text-primary hover:underline">
+              <Link to="/prime/csi" className="text-primary hover:underline">
                 voltar
               </Link>
             </p>
