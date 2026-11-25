@@ -1,0 +1,7 @@
+# Achou uma vulnerabilidade no RatHole? Me avisa antes de divulgar.
+# Found a vulnerability in RatHole? Please report it privately first.
+Contact: mailto:arthurcorona.business@gmail.com
+Expires: 2027-11-01T03:00:00.000Z
+Encryption: https://www.rathole.com.br/pgp-key.txt
+Preferred-Languages: pt, en
+Canonical: https://www.rathole.com.br/.well-known/security.txt

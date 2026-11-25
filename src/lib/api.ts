@@ -2,7 +2,8 @@ import axios from 'axios';
 import type {
   RadarItem,
   RadarPatch,
-  RadarStatus,
+  RadarAdminView,
+  RadarAdminPage,
   RadarDailyResponse,
   RadarWeeklyResponse,
   OsintJob,
@@ -50,9 +51,9 @@ api.interceptors.response.use(
 
 // ---- Radar ----
 export const radarApi = {
-  /** admin: fila de curadoria por status */
-  adminList: (status: RadarStatus) =>
-    api.get<RadarItem[]>('/radar/admin', { params: { status } }).then((r) => r.data),
+  /** admin: painel de curadoria, paginado por aba */
+  adminList: (view: RadarAdminView, page: number, limit: number) =>
+    api.get<RadarAdminPage>('/radar/admin', { params: { view, page, limit } }).then((r) => r.data),
 
   /** admin: aprovar / descartar / trocar tier / posição no dossiê */
   adminPatch: (id: string, body: RadarPatch) =>

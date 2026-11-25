@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -7,71 +7,43 @@ import {
   ExternalLink,
   Check,
   X,
-  Crown,
-  Globe,
+  Star,
   RotateCcw,
   Loader2,
   Inbox,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRadarAdmin, useRadarPatch } from '@/hooks/useRadar';
-import type { RadarItem, RadarPatch, RadarStatus, RadarTier } from '@/types';
-import { cn } from '@/lib/utils';
+import type { RadarAdminView, RadarItem, RadarPatch } from '@/types';
 
-const STATUS_LABEL: Record<RadarStatus, string> = {
-  pending: 'Pendentes',
-  approved: 'Aprovados',
-  rejected: 'Descartados',
+const PAGE_SIZE = 10;
+
+const VIEWS: Record<RadarAdminView, { label: string; hint: string; empty: string }> = {
+  radar: {
+    label: 'No radar',
+    hint: 'Publicados para os membros. Cada rodada diária publica sozinha os 10 de maior pontuação; destaque os melhores para o Dossiê.',
+    empty: 'Nada publicado ainda. A próxima rodada diária publica os 10 itens de maior pontuação.',
+  },
+  highlights: {
+    label: 'Destaques',
+    hint: 'Dossiê da semana, público na home. A posição é opcional: sem ela, ordena por pontuação.',
+    empty: 'Nenhum destaque. Use "Destacar" num item do radar para mandá-lo ao Dossiê da semana.',
+  },
+  queue: {
+    label: 'Fila',
+    hint: 'O que não entrou no automático. Publique ou destaque só se quiser.',
+    empty: 'Fila limpa.',
+  },
+  rejected: {
+    label: 'Descartados',
+    hint: 'Itens tirados do radar ou descartados da fila.',
+    empty: 'Nada descartado.',
+  },
 };
-
-const TIER_LABEL: Record<RadarTier, string> = {
-  members: 'Membros',
-  public: 'Dossiê',
-};
-
-function TierPill({ tier }: { tier: RadarTier }) {
-  return tier === 'members' ? (
-    <Badge className="gap-1 bg-primary/15 text-primary hover:bg-primary/20 border-0 text-[11px]">
-      <Crown className="h-3 w-3" /> Membros
-    </Badge>
-  ) : (
-    <Badge variant="secondary" className="gap-1 text-[11px]">
-      <Globe className="h-3 w-3" /> Dossiê
-    </Badge>
-  );
-}
-
-/** Escolha de destino (Membros = edição diária; Dossiê = ranking público da semana). */
-function TierSwitch({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: RadarTier;
-  onChange: (t: RadarTier) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="inline-flex rounded-md border border-border overflow-hidden text-xs">
-      {(['members', 'public'] as RadarTier[]).map((t) => (
-        <button
-          key={t}
-          type="button"
-          disabled={disabled}
-          onClick={() => onChange(t)}
-          className={cn(
-            'px-3 h-10 sm:h-8 transition-colors',
-            value === t ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted/40',
-          )}
-        >
-          {TIER_LABEL[t]}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 /** Campo de posição no dossiê: salva ao sair do campo ou no Enter. */
 function RankField({
@@ -118,9 +90,11 @@ function RankField({
   );
 }
 
-function RadarAdminCard({ item }: { item: RadarItem }) {
+const actionBtn = 'h-10 sm:h-8 flex-1 sm:flex-none gap-1.5';
+const dangerBtn = `${actionBtn} text-destructive hover:text-destructive hover:bg-destructive/10`;
+
+function RadarAdminCard({ item, view }: { item: RadarItem; view: RadarAdminView }) {
   const patch = useRadarPatch();
-  const [tier, setTier] = useState<RadarTier>(item.tier);
   const busy = patch.isPending && patch.variables?.id === item.id;
 
   const run = (body: RadarPatch, ok: string) =>
@@ -133,6 +107,7 @@ function RadarAdminCard({ item }: { item: RadarItem }) {
     );
 
   const when = item.published_at ?? item.created_at;
+  const spinner = <Loader2 className="h-4 w-4 animate-spin" />;
 
   return (
     <li className="p-4 space-y-3">
@@ -140,9 +115,13 @@ function RadarAdminCard({ item }: { item: RadarItem }) {
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
         <span className="font-medium text-foreground">{item.source}</span>
         <span>·</span>
-        <span>{item.run_type === 'daily' ? 'rodada diária' : 'rodada semanal'}</span>
-        <span>·</span>
-        <span>{format(new Date(when), "dd/MM HH:mm", { locale: ptBR })}</span>
+        <span>{format(new Date(when), 'dd/MM HH:mm', { locale: ptBR })}</span>
+        {item.approved_at && (view === 'radar' || view === 'highlights') && (
+          <>
+            <span>·</span>
+            <span>publicado {format(new Date(item.approved_at), 'dd/MM', { locale: ptBR })}</span>
+          </>
+        )}
         <Badge variant="outline" className="ml-auto font-mono text-[11px] tabular-nums">
           {item.score} pts
         </Badge>
@@ -159,9 +138,7 @@ function RadarAdminCard({ item }: { item: RadarItem }) {
         <ExternalLink className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" />
       </a>
 
-      {item.summary && (
-        <p className="text-sm text-muted-foreground line-clamp-2">{item.summary}</p>
-      )}
+      {item.summary && <p className="text-sm text-muted-foreground line-clamp-2">{item.summary}</p>}
 
       {item.hits && item.hits.length > 0 && (
         <div className="flex flex-wrap gap-1">
@@ -173,84 +150,72 @@ function RadarAdminCard({ item }: { item: RadarItem }) {
         </div>
       )}
 
-      {/* ações */}
-      {item.status === 'pending' && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-          <TierSwitch value={tier} onChange={setTier} disabled={busy} />
-          <div className="flex gap-2 sm:ml-auto">
-            <Button
-              size="sm"
-              className="h-10 sm:h-8 flex-1 sm:flex-none gap-1.5"
-              disabled={busy}
-              onClick={() => run({ status: 'approved', tier }, `Aprovado para ${TIER_LABEL[tier]}`)}
-            >
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              Aprovar
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-10 sm:h-8 flex-1 sm:flex-none gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
-              disabled={busy}
-              onClick={() => run({ status: 'rejected' }, 'Item descartado')}
-            >
-              <X className="h-4 w-4" />
-              Descartar
-            </Button>
-          </div>
+      {/* ações por aba */}
+      {view === 'radar' && (
+        <div className="flex gap-2 pt-1 sm:justify-end">
+          <Button size="sm" className={actionBtn} disabled={busy} onClick={() => run({ tier: 'public' }, 'Destacado no Dossiê')}>
+            {busy ? spinner : <Star className="h-4 w-4" />}
+            Destacar
+          </Button>
+          <Button size="sm" variant="outline" className={dangerBtn} disabled={busy} onClick={() => run({ status: 'rejected' }, 'Tirado do radar')}>
+            <X className="h-4 w-4" />
+            Tirar
+          </Button>
         </div>
       )}
 
-      {item.status === 'approved' && (
+      {view === 'highlights' && (
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-          <div className="flex items-center gap-2">
-            <TierPill tier={item.tier} />
-            {item.approved_at && (
-              <span className="text-xs text-muted-foreground">
-                em {format(new Date(item.approved_at), "dd/MM", { locale: ptBR })}
-              </span>
-            )}
-          </div>
-          {item.tier === 'public' && (
-            <RankField item={item} saving={busy} onSave={(rank) => run({ rank }, 'Posição atualizada')} />
-          )}
-          <div className="flex gap-2 sm:ml-auto">
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-10 sm:h-8 text-xs"
-              disabled={busy}
-              onClick={() =>
-                run(
-                  { tier: item.tier === 'public' ? 'members' : 'public' },
-                  `Movido para ${item.tier === 'public' ? 'Membros' : 'Dossiê'}`,
-                )
-              }
-            >
-              mover p/ {item.tier === 'public' ? 'Membros' : 'Dossiê'}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-10 sm:h-8 text-xs text-muted-foreground"
-              disabled={busy}
-              onClick={() => run({ status: 'pending' }, 'Voltou para pendentes')}
-            >
-              <RotateCcw className="h-3.5 w-3.5 mr-1" />
-              pendente
-            </Button>
-          </div>
+          <RankField item={item} saving={busy} onSave={(rank) => run({ rank }, 'Posição atualizada')} />
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-10 sm:h-8 text-xs sm:ml-auto"
+            disabled={busy}
+            onClick={() => run({ tier: 'members' }, 'Voltou só para o radar')}
+          >
+            <RotateCcw className="h-3.5 w-3.5 mr-1" />
+            tirar dos destaques
+          </Button>
         </div>
       )}
 
-      {item.status === 'rejected' && (
+      {view === 'queue' && (
+        <div className="flex flex-wrap gap-2 pt-1 sm:justify-end">
+          <Button
+            size="sm"
+            className={actionBtn}
+            disabled={busy}
+            onClick={() => run({ status: 'approved', tier: 'members' }, 'Publicado no radar')}
+          >
+            {busy ? spinner : <Check className="h-4 w-4" />}
+            Publicar
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            className={actionBtn}
+            disabled={busy}
+            onClick={() => run({ status: 'approved', tier: 'public' }, 'Publicado e destacado')}
+          >
+            <Star className="h-4 w-4" />
+            Destacar
+          </Button>
+          <Button size="sm" variant="outline" className={dangerBtn} disabled={busy} onClick={() => run({ status: 'rejected' }, 'Item descartado')}>
+            <X className="h-4 w-4" />
+            Descartar
+          </Button>
+        </div>
+      )}
+
+      {view === 'rejected' && (
         <div className="flex justify-end pt-1">
           <Button
             size="sm"
             variant="ghost"
             className="h-10 sm:h-8 text-xs"
             disabled={busy}
-            onClick={() => run({ status: 'pending' }, 'Item restaurado')}
+            onClick={() => run({ status: 'pending' }, 'Voltou para a fila')}
           >
             <RotateCcw className="h-3.5 w-3.5 mr-1" />
             restaurar
@@ -263,32 +228,57 @@ function RadarAdminCard({ item }: { item: RadarItem }) {
 
 /** Seção de curadoria do Radar no painel admin. Pensada para uso no celular. */
 export function RadarAdmin() {
-  const [status, setStatus] = useState<RadarStatus>('pending');
-  const { data, isLoading, isError, refetch } = useRadarAdmin(status);
-  const items = data ?? [];
+  const [view, setView] = useState<RadarAdminView>('radar');
+  const [page, setPage] = useState(1);
+  const topRef = useRef<HTMLDivElement>(null);
+  const { data, isLoading, isError, isFetching, refetch } = useRadarAdmin(view, page, PAGE_SIZE);
+
+  const items = data?.items ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const first = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const last = Math.min(page * PAGE_SIZE, total);
+
+  // ao curar o último item da última página, volta para a página anterior
+  useEffect(() => {
+    if (data && page > totalPages) setPage(totalPages);
+  }, [data, page, totalPages]);
+
+  const goTo = (next: number) => {
+    setPage(next);
+    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
-    <div className="mt-10">
-      <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="mt-10 scroll-mt-20" ref={topRef}>
+      <div className="mb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-xl font-bold flex items-center gap-2">
           <Radio className="h-5 w-5 text-primary" />
           Radar
-          {status === 'pending' && items.length > 0 && (
-            <span className="ml-1 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-semibold text-primary">
-              {items.length}
+          {total > 0 && (
+            <span className="ml-1 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-semibold text-primary tabular-nums">
+              {total}
             </span>
           )}
+          {isFetching && !isLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </h2>
-        <Tabs value={status} onValueChange={(v) => setStatus(v as RadarStatus)}>
+        <Tabs
+          value={view}
+          onValueChange={(v) => {
+            setView(v as RadarAdminView);
+            setPage(1);
+          }}
+        >
           <TabsList className="h-10 sm:h-9 w-full sm:w-auto">
-            {(Object.keys(STATUS_LABEL) as RadarStatus[]).map((s) => (
-              <TabsTrigger key={s} value={s} className="flex-1 sm:flex-none text-xs">
-                {STATUS_LABEL[s]}
+            {(Object.keys(VIEWS) as RadarAdminView[]).map((v) => (
+              <TabsTrigger key={v} value={v} className="flex-1 sm:flex-none text-xs">
+                {VIEWS[v].label}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
       </div>
+      <p className="mb-4 text-xs text-muted-foreground">{VIEWS[view].hint}</p>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         {isLoading ? (
@@ -296,24 +286,50 @@ export function RadarAdmin() {
         ) : isError ? (
           <div className="p-8 text-center text-muted-foreground space-y-3">
             <p>Não deu para carregar o radar.</p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>tentar de novo</Button>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              tentar de novo
+            </Button>
           </div>
         ) : items.length === 0 ? (
           <div className="p-12 text-center flex flex-col items-center">
             <Inbox className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-            <h3 className="text-lg font-medium">
-              {status === 'pending' ? 'Fila limpa' : `Nenhum item em ${STATUS_LABEL[status].toLowerCase()}`}
-            </h3>
-            {status === 'pending' && (
-              <p className="text-muted-foreground mt-1 text-sm">Nada aguardando curadoria. O radar envia novos itens a cada rodada.</p>
-            )}
+            <p className="text-sm text-muted-foreground max-w-sm">{VIEWS[view].empty}</p>
           </div>
         ) : (
           <ul className="divide-y divide-border/50">
             {items.map((item) => (
-              <RadarAdminCard key={item.id} item={item} />
+              <RadarAdminCard key={item.id} item={item} view={view} />
             ))}
           </ul>
+        )}
+
+        {total > PAGE_SIZE && (
+          <div className="flex items-center justify-between gap-2 border-t border-border/60 px-4 py-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 sm:h-8 gap-1"
+              disabled={page <= 1 || isFetching}
+              onClick={() => goTo(page - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Anterior</span>
+            </Button>
+            <span className="text-xs text-muted-foreground tabular-nums text-center">
+              {first}–{last} de {total}
+              <span className="hidden sm:inline"> · página {page} de {totalPages}</span>
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 sm:h-8 gap-1"
+              disabled={page >= totalPages || isFetching}
+              onClick={() => goTo(page + 1)}
+            >
+              <span className="hidden sm:inline">Próxima</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         )}
       </div>
     </div>

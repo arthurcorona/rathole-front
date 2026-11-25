@@ -6,6 +6,7 @@ import {
   Linkedin, 
   Twitter, 
   Mail, 
+  Youtube,
   ExternalLink,
   Clipboard,
   Check
@@ -13,13 +14,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-// Projetos mantidos iguais
+const YOUTUBE_URL = 'https://www.youtube.com/@coronasec';
+
 const projects = [
   {
     title: 'Homelab',
     description:
-      'Infraestrutura self-hosted em Raspberry Pi 4 com Docker, usada como laboratório de estudos em DevOps, automação, cibersegurança e redes. Inclui reverse proxy, monitoramento com Prometheus/Grafana, automação com n8n e banco PostgreSQL.',
-    tech: ['Raspberry Pi', 'Docker', 'Nginx', 'PostgreSQL', 'Grafana', 'Prometheus', 'n8n'],
+      'Raspberry Pi 4 com Docker, meu laboratório de DevOps, redes e cibersegurança: reverse proxy, monitoramento com Prometheus/Grafana e o coletor que alimenta o Radar deste blog.',
+    tech: ['Raspberry Pi', 'Docker', 'Nginx', 'Python', 'Grafana', 'Prometheus'],
     url: 'https://github.com/arthurcorona/homelab',
   },
   {
@@ -31,9 +33,9 @@ const projects = [
   },
   {
     title: 'RatHole',
-    description: 'Blog pessoal com sistema de sugestões, autenticação e painel admin.',
-    tech: ['React', 'Postgres', 'TypeScript', 'Tailwind'],
-    url: '#',
+    description: 'Este blog: área Prime para membros, radar de notícias de segurança, busca full-text e painel admin.',
+    tech: ['React', 'TypeScript', 'Fastify', 'PostgreSQL'],
+    url: 'https://github.com/arthurcorona/rathole-front',
   },
 ];
 
@@ -41,12 +43,13 @@ const About = () => {
   const [copied, setCopied] = useState(false);
 
   const gpgKey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
+
 mDMEabcDpRYJKwYBBAHaRw8BAQdAx7HG/t6hZlK0a5tu6EnO0yMI86pbd052tsej
 2EnkahW0HGNvcm9uYSA8Y29yb25hZ2dwQGdtYWlsLmNvbT6ImQQTFgoAQRYhBJGe
 d+OpyfPI+pHyvhvEnWjCauYqBQJptwOlAhsDBQkFpLHLBQsJCAcCAiICBhUKCQgL
 AgQWAgMBAh4HAheAAAoJEBvEnWjCauYqsxoBAPMim0B+jdgqv8owzeIvqOkjunU/
 Hht1ICJ7Er43IsLXAP9bOhc7sDNaXfejsb/LAofN+ivapPLoc4nCRr8O/y66Drg4
-BGm3A6USCisGAQQBl1UBBQEBB0CgDgtTpukUX7qJJKKctLlkbarsbO8GUmaXVde1f
+BGm3A6USCisGAQQBl1UBBQEBB0CgDgtTpukUX7qJJKKctLlkbarsbO8GUmaXVde1
 phtUYAMBCAeIfgQYFgoAJhYhBJGed+OpyfPI+pHyvhvEnWjCauYqBQJptwOlAhsM
 BQkFpLHLAAoJEBvEnWjCauYqQokBAPAUPLtxVYwic+KQOT6A4rkFl5iCCJyWRkpm
 upNu0a+uAP9Yf+gRSkb2HP6bhBqKoWObzOuIMlYUQeGH+OznZo1hCA==
@@ -74,9 +77,19 @@ upNu0a+uAP9Yf+gRSkb2HP6bhBqKoWObzOuIMlYUQeGH+OznZo1hCA==
                 Arthur Corona
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Um cara muito simples. Atualmente atuando como QA Analyst na Inbazz, 
-                sempre buscando estudar e aprender mais. Além de computadores, também tenho
-                como hobbies livros e jiu jitsu.
+                Um cara muito simples. Hoje atuo como Analista de QA e desenvolvimento web.
+                Nas horas vagas eu sou do cyber: pentesting e AppSec. Fora das telas, também
+                tenho muitos hobbies: livros, jiu-jitsu, mergulho, aquarismo... Tô tentando
+                voltar pro{' '}
+                <a
+                  href={YOUTUBE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  YouTube
+                </a>{' '}
+                também, que é uma coisa que curto bastante.
               </p>
 
               <div className="flex items-center gap-4 pt-2">
@@ -89,7 +102,10 @@ upNu0a+uAP9Yf+gRSkb2HP6bhBqKoWObzOuIMlYUQeGH+OznZo1hCA==
                 <a href="https://linkedin.com/in/arthurcorona" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors p-1.5">
                   <Linkedin className="h-5 w-5" />
                 </a>
-                <a href="mailto:seu@email.com" className="text-muted-foreground hover:text-foreground transition-colors p-1.5">
+                <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-muted-foreground hover:text-foreground transition-colors p-1.5">
+                  <Youtube className="h-5 w-5" />
+                </a>
+                <a href="mailto:arthurcorona.business@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors p-1.5">
                   <Mail className="h-5 w-5" />
                 </a>
               </div>
@@ -139,20 +155,39 @@ upNu0a+uAP9Yf+gRSkb2HP6bhBqKoWObzOuIMlYUQeGH+OznZo1hCA==
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {[
-            { icon: '📚', title: 'AWS Developer Associate', desc: 'Preparando para a certificação' },
+          {([
+            { icon: '🛡️', title: 'AppSec', desc: 'Estudando pentest web com Burp Suite' },
+            { icon: '🎓', title: 'Engenharia de Controle e Automação', desc: 'Graduação no IFES' },
             { icon: '🖥️', title: 'Homelab', desc: 'Expandindo a infra no Raspberry Pi' },
-            { icon: '🔬', title: 'VibroLearn', desc: 'Pesquisa em falhas industriais no IFES' },
-            { icon: '🎭', title: 'PlayWroght', desc: 'Integrando Playwright para testes dinâmicos ' },
-          ].map(({ icon, title, desc }) => (
-            <div key={title} className="flex items-start gap-3 p-4 rounded-lg bg-card/30 border border-border/40">
-              <span className="text-xl leading-none mt-0.5">{icon}</span>
-              <div>
-                <p className="text-sm font-medium text-foreground">{title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+            { icon: '▶️', title: 'YouTube · @coronasec', desc: 'Voltando a gravar vídeos sobre cyber', href: YOUTUBE_URL },
+          ] as { icon: string; title: string; desc: string; href?: string }[]).map(({ icon, title, desc, href }) => {
+            const body = (
+              <>
+                <span className="text-xl leading-none mt-0.5">{icon}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">{title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+                </div>
+              </>
+            );
+            const box = 'flex items-start gap-3 p-4 rounded-lg bg-card/30 border border-border/40';
+            return href ? (
+              <a
+                key={title}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${box} group hover:border-primary/40 hover:bg-card/50 transition-colors`}
+              >
+                {body}
+                <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
+              </a>
+            ) : (
+              <div key={title} className={box}>
+                {body}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -179,7 +214,7 @@ upNu0a+uAP9Yf+gRSkb2HP6bhBqKoWObzOuIMlYUQeGH+OznZo1hCA==
             },
             {
               label: 'Estudando',
-              items: ['AWS', 'Cibersegurança'],
+              items: ['AppSec', 'Pentest', 'Burp Suite'],
             },
           ].map(({ label, items }) => (
             <div key={label} className="flex flex-wrap items-center gap-x-4 gap-y-2">

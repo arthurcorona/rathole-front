@@ -77,6 +77,16 @@ export interface RadarItem {
   created_at: string;
 }
 
+/** Abas do painel: no radar (membros), destaques (dossiê), fila (pendentes), descartados. */
+export type RadarAdminView = 'radar' | 'highlights' | 'queue' | 'rejected';
+
+export interface RadarAdminPage {
+  items: RadarItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface RadarPatch {
   status?: RadarStatus;
   tier?: RadarTier;

@@ -1,18 +1,19 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { radarApi } from '@/lib/api';
-import type { RadarPatch, RadarStatus } from '@/types';
+import type { RadarAdminView, RadarPatch } from '@/types';
 
 export const radarKeys = {
   all: ['radar'] as const,
-  admin: (status: RadarStatus) => ['radar', 'admin', status] as const,
+  admin: (view: RadarAdminView, page: number, limit: number) => ['radar', 'admin', view, page, limit] as const,
   daily: (params: { date?: string; days?: number }) => ['radar', 'daily', params] as const,
   weekly: ['radar', 'weekly'] as const,
 };
 
-export function useRadarAdmin(status: RadarStatus) {
+export function useRadarAdmin(view: RadarAdminView, page: number, limit: number) {
   return useQuery({
-    queryKey: radarKeys.admin(status),
-    queryFn: () => radarApi.adminList(status),
+    queryKey: radarKeys.admin(view, page, limit),
+    queryFn: () => radarApi.adminList(view, page, limit),
+    placeholderData: keepPreviousData, // troca de página sem piscar a lista
   });
 }
 

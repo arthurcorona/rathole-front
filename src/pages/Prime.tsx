@@ -34,7 +34,7 @@ function Prompt({ user, cmd }: { user: string; cmd: string }) {
 
 /** O que a Prime oferece. Reaproveitado na landing e no `ls` dos membros. */
 const MODULES = [
-  { icon: Radio, name: 'radar/', desc: 'edição diária de notícias de segurança e privacidade, curada à mão' },
+  { icon: Radio, name: 'radar/', desc: 'edição diária de notícias de segurança e privacidade, com destaques escolhidos à mão' },
   { icon: FileText, name: 'posts/', desc: 'artigos exclusivos, marcados com o cadeado' },
   { icon: Search, name: 'osint/', desc: 'painel de consultas OSINT (em breve)' },
 ];

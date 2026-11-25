@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Radio, ChevronRight, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { Radio, ChevronRight, ChevronDown, ChevronUp, Loader2, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRadarDaily } from '@/hooks/useRadar';
@@ -33,6 +33,12 @@ function RadarLine({
           </span>
           <span className="mt-0.5 block text-xs text-muted-foreground">
             {item.source}
+            {item.tier === 'public' && (
+              <span className="text-primary">
+                {' · '}
+                <Star className="inline h-3 w-3 -mt-0.5 fill-current" /> destaque
+              </span>
+            )}
             {showDate && item.approved_at && (
               <> · {format(new Date(item.approved_at), 'dd/MM', { locale: ptBR })}</>
             )}
@@ -44,7 +50,7 @@ function RadarLine({
   );
 }
 
-/** Card compacto da edição diária (membros). "ver todos" abre os últimos 7 dias. */
+/** Card compacto da edição diária (membros), destaques incluídos. "ver todos" abre os últimos 7 dias. */
 export function RadarDaily() {
   const [expanded, setExpanded] = useState(false);
   const [selected, setSelected] = useState<RadarItem | null>(null);
@@ -84,7 +90,7 @@ export function RadarDaily() {
           <div className="rounded-md border border-dashed border-border/70 p-4 text-center text-sm text-muted-foreground">
             {expanded
               ? 'Nenhuma notícia aprovada nos últimos 7 dias.'
-              : 'A edição de hoje ainda está sendo curada. Volte mais tarde ou veja os últimos dias.'}
+              : 'A edição de hoje ainda não saiu. Volte mais tarde ou veja os últimos dias.'}
           </div>
         ) : (
           <ul className="space-y-0.5">
